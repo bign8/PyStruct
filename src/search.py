@@ -1,9 +1,11 @@
+from UUID import uuid4
+
 class Node(object):
     def __init__():
-        pass
+        self._hash = uuid4().bytes
 
-    def __hash__():
-        pass
+    def __hash__(self):
+        return self._hash
 
 
 def neighbors(node):
@@ -21,7 +23,9 @@ def dist(node, neighbor):
 def get_lowest_fscore(openset, f_score):
     # return the node in openset having the lowest f_score[] value
     keys = map(hash, openset)
-    
+    subset = {key: f_score[key] for key in keys}
+    return min(subset, key=subset.get)
+
 
 
 def reconstruct(came_from, current):
