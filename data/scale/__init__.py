@@ -1,0 +1,10 @@
+from .. import Variable
+
+var_range = map(str, range(1, 6))
+V = [
+    Variable('Class', ['L', 'B', 'R'], chr),
+    Variable('L-Weight', var_range, int),
+    Variable('L-Dist', var_range, int),
+    Variable('R-Weight', var_range, int),
+    Variable('R-Dist', var_range, int)
+]

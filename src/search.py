@@ -44,27 +44,28 @@ def search(start, goal, epsilon=1):
     start_hash = hash(start)
     g_score = {start_hash: 0}  # Cost from start along best known path.
     # Estimated total cost from start to goal through y.
+    f_score = {}
     f_score[start_hash] = g_score[start_hash] + epsilon * heuristic(start, goal)
 
     while openset:
         current = get_lowest_fscore(openset, f_score)
         # current =
-        if current == goal
+        if current == goal:
             return reconstruct(came_from, goal)
 
         openset.remove(current)
         closedset.add(current)
         for neighbor in neighbors(current):
-            if neighbor in closedset
+            if neighbor in closedset:
                 continue
             tentative_g_score = g_score[hash(current)] + dist(current, neighbor)
 
             n_hash = hash(neighbor)
-            if neighbor not in openset or tentative_g_score < g_score[n_hash]
+            if neighbor not in openset or tentative_g_score < g_score[n_hash]:
                 came_from[n_hash] = current
                 g_score[n_hash] = tentative_g_score
                 f_score[n_hash] = tentative_g_score + epsilon * heuristic(neighbor, goal)
-                if neighbor not in openset
+                if neighbor not in openset:
                     openset.add(neighbor)
 
     raise Exception('Path not found')
