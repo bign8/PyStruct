@@ -1,6 +1,10 @@
+from os import path
+
+
 class VariableSet(object):
-    def __init__(self, vars=[]):
-        self.vars = vars
+    def __init__(self, variables=[]):
+        self.variables = variables
+        self.data = []
 
     def process(self, fh):
         """
@@ -14,10 +18,11 @@ class VariableSet(object):
         results = []
         for line in fh:
             data, item = line.split(','), []
-            for variable, value in zip(self.vars, data):
+            for variable, value in zip(self.variables, data):
                 item.append(variable.process(value))
             results.append(item)
-        return results
+        self.data = results
+        return self
 
     def build_forward_order_graph(self):
         pass
@@ -35,7 +40,7 @@ class Variable(object):
         self.type = type
 
     def process(self, value):
-        return self.type(value)
+        return self.type(value.strip())
 
 
 class Node(object):
@@ -43,7 +48,10 @@ class Node(object):
         self.vars = vars
 
 
-def load(name='scale'):
-    tmp = __import__(name)
-    handle = open('{}/{}.data'.format(name, name), 'rb')
+def load(name='data.scale'):
+    short = name.split('.')[1]
+    tmp = getattr(__import__(name), short)
+    basepath = path.dirname(__file__)
+    filepath = path.join(basepath, short, "{}.data".format(short))
+    handle = open(path.abspath(filepath), 'rb')
     return VariableSet(tmp.V).process(handle)
