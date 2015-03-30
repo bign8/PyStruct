@@ -1,5 +1,6 @@
 from UUID import uuid4
 
+
 class Node(object):
     def __init__():
         self._hash = uuid4().bytes
