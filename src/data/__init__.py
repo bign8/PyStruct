@@ -2,30 +2,37 @@ from os import path
 
 
 class DataSet(object):
-    def __init__(self, name, variables=[]):
+    """
+    A dataset (D) is a set of records (D_1 ... D_N), each of which is an
+    instantiation of the variables in V.
+
+    Variables (V) refer to the variables of the Bayesian network (`variables').
+    """
+    def __init__(self, name='scale'):
+        """
+        Load the dataset from file + instantiate variables as defined
+
+        :param name: The name of the DataSet to be loaded
+        :type name: str
+        """
         self.name = name
-        self.variables = variables
-        self.variable_map = {v.name: v for v in variables}
+        self._cache = {}  # probability cache
+
+        # Build variables list from file
+        tmp = getattr(__import__('data.{}'.format(name)), name)
+        self.variables = tmp.V
+        self.variable_map = {v.name: v for v in self.variables}
+
+        # Populate data instances and cast them as variables define
         self.data = []
-        self._cache = {}
-
-    def process(self, fh):
-        """
-        Process the data associated with this dataset
-
-        :param fh: File handle to file being processes
-        :type fh: :class:`FILEHANDLE`
-        :return: List of data values
-        :rtype: list
-        """
-        results = []
-        for line in fh:
-            data, item = line.split(','), []
-            for variable, value in zip(self.variables, data):
-                item.append(variable.process(value))
-            results.append(item)
-        self.data = results
-        return self
+        base_path = path.dirname(__file__)
+        file_path = path.join(base_path, name, "{}.data".format(name))
+        with open(path.abspath(file_path), 'rb') as handle:
+            for line in handle:
+                data, item = line.split(','), []
+                for variable, value in zip(self.variables, data):
+                    item.append(variable.process(value))
+                self.data.append(item)
 
     def build_forward_order_graph(self):
         pass
@@ -50,48 +57,46 @@ class DataSet(object):
 
         if name not in self.variable_map:
             raise AttributeError('Variable not available')
-        if value not in self.variable_map.get(name).r:
+        if value not in self.variable_map.get(name).domain:
             raise NameError('Value not available in Variable range')
-        if name in self._cache:
-            return self._cache.get(key)
 
         # Compute the probability of an instance happening in the DataSet
-        total = len(self.data)
-        count = 0
-        idx = self.variables.index(self.variable_map.get(name))
-        for item in self.data:
-            if item[idx] == value:
-                count += 1
-        self._cache[key] = count * 1.0 / total
+        if name not in self._cache:
+            total = len(self.data)
+            count = 0
+            idx = self.variables.index(self.variable_map.get(name))
+            for item in self.data:
+                if item[idx] == value:
+                    count += 1
+            self._cache[key] = count * 1.0 / total
+
         return self._cache.get(key)
+
+    def probability_given(self, a, b):
+        # TODO: implement this
+        pass
 
 
 class Variable(object):
-    def __init__(self, name, r=[], type=str):
+    """
+    A Variable (X_i \in V) is one of the variables of the Bayesian network.
+
+    The states a variable can take on (r_i) is stored as `domain'
+    """
+    def __init__(self, name, domain=list(), var_type=str):
         self.name = name
-        self.r = r
-        self.type = type
+        self.domain = domain
+        self.var_type = var_type
 
     def process(self, value):
-        return self.type(value.strip())
+        return self.var_type(value.strip())
 
 
 class Node(object):
-    def __init__(self, vars=[]):
-        self.vars = vars
-
-
-def load(name='scale'):
     """
-    Load a specific set of data into a DataSet object
-
-    :param name: The name of the DataSet to be loaded
-    :type name: str
-    :return: A preloaded DataSet
-    :rtype: :class:`DataSet`
+    A node is a node in the search graph and corresponds to a set of variables.
+    Typically represented in the text by a bold upper-case letter, and can
+    refer to either the set of variables, or the node itself depending on context.
     """
-    tmp = getattr(__import__('data.{}'.format(name)), name)
-    basepath = path.dirname(__file__)
-    filepath = path.join(basepath, name, "{}.data".format(name))
-    handle = open(path.abspath(filepath), 'rb')
-    return DataSet(name, tmp.V).process(handle)
+    def __init__(self, var_set=list()):
+        self.var_set = var_set

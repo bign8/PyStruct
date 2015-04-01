@@ -2,7 +2,7 @@ from UUID import uuid4
 
 
 class Node(object):
-    def __init__():
+    def __init__(self):
         self._hash = uuid4().bytes
 
     def __hash__(self):
@@ -26,7 +26,6 @@ def get_lowest_fscore(openset, f_score):
     keys = map(hash, openset)
     subset = {key: f_score[key] for key in keys}
     return min(subset, key=subset.get)
-
 
 
 def reconstruct(came_from, current):
@@ -68,5 +67,4 @@ def search(start, goal, epsilon=1):
                 f_score[n_hash] = tentative_g_score + epsilon * heuristic(neighbor, goal)
                 if neighbor not in openset:
                     openset.add(neighbor)
-
     raise Exception('Path not found')
