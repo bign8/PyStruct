@@ -17,6 +17,7 @@ class DataSet(object):
         """
         self.name = name
         self._probability_cache = {}  # probability cache
+        self._join_probability_cache = {}  # join probability cache
 
         # Build variables list from file
         tmp = getattr(__import__('data.{}'.format(name)), name)
@@ -42,6 +43,13 @@ class DataSet(object):
         # TODO: reverse graph links
         return graph
 
+    def generate_probability_key(self, name, value):
+        if name not in self.variable_map:
+            raise AttributeError('Variable not available')
+        if value not in self.variable_map.get(name).domain:
+            raise NameError('Value not available in Variable range')
+        return '{}-{}'.format(name, value)
+
     def probability(self, name, value):
         """
         Compute the probability of a Variable being a Value
@@ -53,28 +61,16 @@ class DataSet(object):
         :return: Probability of `variable' being a `value'
         :rtype: float
         """
-        key = '{}-{}'.format(name, value)
-
-        if name not in self.variable_map:
-            raise AttributeError('Variable not available')
-        if value not in self.variable_map.get(name).domain:
-            raise NameError('Value not available in Variable range')
+        key = self.generate_probability_key(name, value)
 
         # Compute the probability of an instance happening in the DataSet
         if name not in self._probability_cache:
             total = len(self.data)
-            count = 0
             idx = self.variables.index(self.variable_map.get(name))
-            for item in self.data:
-                if item[idx] == value:
-                    count += 1
-            self._probability_cache[key] = count * 1.0 / total
+            count = sum([int(item[idx] == value) for item in self.data])
+            self._probability_cache[key] = float(count) / total
 
         return self._probability_cache.get(key)
-
-    def probability_given(self, a, b):
-        # TODO: implement this
-        pass
 
 
 class Variable(object):
