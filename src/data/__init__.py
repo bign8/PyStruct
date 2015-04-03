@@ -16,7 +16,7 @@ class DataSet(object):
         :type name: str
         """
         self.name = name
-        self._cache = {}  # probability cache
+        self._probability_cache = {}  # probability cache
 
         # Build variables list from file
         tmp = getattr(__import__('data.{}'.format(name)), name)
@@ -61,16 +61,16 @@ class DataSet(object):
             raise NameError('Value not available in Variable range')
 
         # Compute the probability of an instance happening in the DataSet
-        if name not in self._cache:
+        if name not in self._probability_cache:
             total = len(self.data)
             count = 0
             idx = self.variables.index(self.variable_map.get(name))
             for item in self.data:
                 if item[idx] == value:
                     count += 1
-            self._cache[key] = count * 1.0 / total
+            self._probability_cache[key] = count * 1.0 / total
 
-        return self._cache.get(key)
+        return self._probability_cache.get(key)
 
     def probability_given(self, a, b):
         # TODO: implement this
@@ -85,11 +85,14 @@ class Variable(object):
     """
     def __init__(self, name, domain=list(), var_type=str):
         self.name = name
-        self.domain = domain
+        self.domain = [var_type(x) for x in domain]
         self.var_type = var_type
 
     def process(self, value):
         return self.var_type(value.strip())
+
+    def __repr__(self):
+        return self.name
 
 
 class Node(object):
