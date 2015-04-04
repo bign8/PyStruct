@@ -79,13 +79,15 @@ class Variable(object):
 
     The states a variable can take on (r_i) is stored as `domain'
     """
-    def __init__(self, name, domain=list(), var_type=str):
-        self.name = name
-        self.domain = [var_type(x) for x in domain]
+    def __init__(self, name=None, var_type=str, domain=list()):
+        self.name = name if name is not None else id(self)
+        self.domain = set([var_type(x) for x in domain])
         self.var_type = var_type
 
     def process(self, value):
-        return self.var_type(value.strip())
+        item = self.var_type(value.strip())
+        self.domain.add(item)
+        return item
 
     def __repr__(self):
         return self.name

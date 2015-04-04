@@ -84,11 +84,7 @@ class BN(DataSet):
         :rtype: list
         """
         idx = self.variables.index(X_i)
-        result = []
-        for record in D_u:
-            if record[idx] == value:
-                result.append(record)
-        return result
+        return [item for item in D_u if item[idx] == value]
 
     def calculate_scores(self):
         self.update_scores(set(), self.data)
