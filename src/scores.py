@@ -80,16 +80,26 @@ class BN(DataSet):
         """
         :type X_i: :class:`data.Variable`
         :type value: object
-        :type D_u: list
-        :rtype: list
+        :type D_u: set
+        :rtype: set
         """
-        idx = self.variables.index(X_i)
-        return [item for item in D_u if item[idx] == value]
+        idxs = self.magic[X_i][value]
+        return idxs.intersection(D_u)
+        # idx = self.variables.index(X_i)
+        # return [item for item in D_u if item[idx] == value]
+
+    def build_record_slices(self):
+        # Populate datas tructure with the data indexes
+        self.magic = {}
+        for data_idx, record in enumerate(self.data):
+            for idx, item in enumerate(record):
+                top = self.magic.setdefault(self.variables[idx], dict())
+                top.setdefault(item, set()).add(data_idx)
 
     def calculate_scores(self):
         print 'Updating Scores'
         self.update_scores(set(), self.data)
-        self.expand_ad_node(-1, set(), self.data)
+        self.expand_ad_node(-1, set(), set(range(len(self.data))))
         print 'Prune Variables'
         for X in self.variables:
             self.prune(X, set(), self.score.get(X, set()))
@@ -98,7 +108,7 @@ class BN(DataSet):
         """
         :type i: int
         :type U: set
-        :type D_u: list
+        :type D_u: set
         """
         print 'Expanded AD node', i, U
         for variable in self.variables[i + 1:]:
@@ -108,15 +118,16 @@ class BN(DataSet):
         """
         :type X_i: :class:`data.Variable`
         :type U: set
-        :type D_u: list
+        :type D_u: set
         """
         U_union = U.union({X_i})
         for value in X_i.domain:
-            D_consistent = self.find_consistent_records(X_i, value, D_u)
+            D_consistent_idx = self.find_consistent_records(X_i, value, D_u)
+            D_consistent = [self.data[idx] for idx in D_consistent_idx]
             self.update_scores(U_union, D_consistent)
             N = len(self.data)
             if len(U) < log(2 * N / log(N)):
-                self.expand_ad_node(self.variables.index(X_i), U_union, D_consistent)
+                self.expand_ad_node(self.variables.index(X_i), U_union, D_consistent_idx)
 
     def update_scores(self, U, D_u):
         """

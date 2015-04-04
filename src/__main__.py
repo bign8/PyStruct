@@ -65,14 +65,12 @@ class Timer(object):
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
-    data = BNSearch('scale')
+    data = BNSearch('flag')
     print timer.stop()
 
-    # timer = Timer('Sample Probability Calculations')
-    # print data.probability('Class', 'L')
-    # print data.probability('Class', 'B')
-    # print data.probability('Class', 'R')
-    # print timer.stop()
+    timer = Timer('Build set slices')
+    data.build_record_slices()
+    print timer.stop()
 
     timer = Timer('Calculate Scores')
     data.calculate_scores()
