@@ -80,6 +80,9 @@ def powerset_generator(i):
 
 class BNSearch(BN):
 
+    parents = {}
+    came_from = {}
+
     def search(self):
         """
         :type D: :class:`scores.BN`
@@ -120,6 +123,41 @@ class BNSearch(BN):
                 if f < self.base_score.setdefault(union, f + 1):
                     open.put((f, union))
                     self.base_score[union] = f
+                    self.came_from[union] = U
+
+    def rebuild_forward_order_train(self):
+        goal = frozenset(self.variables)
+        train = [goal]
+        while goal in self.came_from:
+            goal = self.came_from[goal]
+            train.append(goal)
+        return train
+
+    def rebuild_parents(self, path):
+        last, nodes, graph = path.pop(0), set(), dict()
+        while path:
+            another_one = path.pop(0)
+            added_node = another_one.difference(last)
+            last = another_one
+
+            nodes.add(iter(added_node).next())
+            parents = self.find_parents_without_vars(added_node, nodes)
+            graph[added_node] = parents
+        return graph
+
+    def find_parents_without_vars(self, node, used):
+        remaining = set(self.variables).difference(used)
+        if not remaining:
+            return set()
+        return min(
+            [
+                (self.score.get(node, p), p, )
+                for p in powerset_generator(remaining) if p
+            ], key=lambda p: p[0]
+        )[1]
+
+    def rebuild_FUCKING_graph(self):
+        pass  # TODO
 
     def joint_best_score(self, Y, U):
         return min(self.score.get(Y, parents) for parents in powerset_generator(U))
