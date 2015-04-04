@@ -87,8 +87,10 @@ class BN(DataSet):
         return [item for item in D_u if item[idx] == value]
 
     def calculate_scores(self):
+        print 'Updating Scores'
         self.update_scores(set(), self.data)
         self.expand_ad_node(-1, set(), self.data)
+        print 'Prune Variables'
         for X in self.variables:
             self.prune(X, set(), self.score.get(X, set()))
 
@@ -98,6 +100,7 @@ class BN(DataSet):
         :type U: set
         :type D_u: list
         """
+        print 'Expanded AD node', i, U
         for variable in self.variables[i + 1:]:
             self.expand_vary_node(variable, U, D_u)
 
@@ -107,9 +110,9 @@ class BN(DataSet):
         :type U: set
         :type D_u: list
         """
+        U_union = U.union({X_i})
         for value in X_i.domain:
             D_consistent = self.find_consistent_records(X_i, value, D_u)
-            U_union = U.union({X_i})
             self.update_scores(U_union, D_consistent)
             N = len(self.data)
             if len(U) < log(2 * N / log(N)):

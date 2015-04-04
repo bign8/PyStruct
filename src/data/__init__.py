@@ -8,6 +8,11 @@ class DataSet(object):
 
     Variables (V) refer to the variables of the Bayesian network (`variables').
     """
+    name = None
+    data = None
+    variables = None
+    variable_map = None
+
     def __init__(self, name='scale'):
         """
         Load the dataset from file + instantiate variables as defined
@@ -20,9 +25,11 @@ class DataSet(object):
         self._join_probability_cache = {}  # join probability cache
 
         # Build variables list from file
-        tmp = getattr(__import__('data.{}'.format(name)), name)
-        self.variables = tmp.V
-        self.variable_map = {v.name: v for v in self.variables}
+        try:
+            tmp = getattr(__import__('data.{}'.format(name)), name)
+            self.variables = tmp.V
+        except:
+            pass  # will auto-generate variables later if necessary
 
         # Populate data instances and cast them as variables define
         self.data = []
@@ -31,46 +38,49 @@ class DataSet(object):
         with open(path.abspath(file_path), 'rb') as handle:
             for line in handle:
                 data, item = line.split(','), []
+
+                # Generate variables if they aren't preset
+                if not self.variables:
+                    self.variables = [Variable() for _ in data]
                 for variable, value in zip(self.variables, data):
+                    # Skip null variables
+                    if not variable:
+                        continue
                     item.append(variable.process(value))
                 self.data.append(item)
 
-    def build_forward_order_graph(self):
-        pass
+        # Prune null variables
+        self.variables = [v for v in self.variables if v]
+        self.variable_map = {v.name: v for v in self.variables}
 
-    def build_reverse_order_graph(self):
-        graph = self.build_reverse_order_graph()
-        # TODO: reverse graph links
-        return graph
-
-    def generate_probability_key(self, name, value):
-        if name not in self.variable_map:
-            raise AttributeError('Variable not available')
-        if value not in self.variable_map.get(name).domain:
-            raise NameError('Value not available in Variable range')
-        return '{}-{}'.format(name, value)
-
-    def probability(self, name, value):
-        """
-        Compute the probability of a Variable being a Value
-
-        :param name: The name of the variable we are looking for
-        :type name: basestring
-        :param value: The value of the variable we are looking for
-        :type value: basestring
-        :return: Probability of `variable' being a `value'
-        :rtype: float
-        """
-        key = self.generate_probability_key(name, value)
-
-        # Compute the probability of an instance happening in the DataSet
-        if name not in self._probability_cache:
-            total = len(self.data)
-            idx = self.variables.index(self.variable_map.get(name))
-            count = sum([int(item[idx] == value) for item in self.data])
-            self._probability_cache[key] = float(count) / total
-
-        return self._probability_cache.get(key)
+    # def generate_probability_key(self, name, value):
+    #     if name not in self.variable_map:
+    #         raise AttributeError('Variable not available')
+    #     if value not in self.variable_map.get(name).domain:
+    #         raise NameError('Value not available in Variable range')
+    #     return '{}-{}'.format(name, value)
+    #
+    # def probability(self, name, value):
+    #     """
+    #     Compute the probability of a Variable being a Value
+    #
+    #     :param name: The name of the variable we are looking for
+    #     :type name: basestring
+    #     :param value: The value of the variable we are looking for
+    #     :type value: basestring
+    #     :return: Probability of `variable' being a `value'
+    #     :rtype: float
+    #     """
+    #     key = self.generate_probability_key(name, value)
+    #
+    #     # Compute the probability of an instance happening in the DataSet
+    #     if name not in self._probability_cache:
+    #         total = len(self.data)
+    #         idx = self.variables.index(self.variable_map.get(name))
+    #         count = sum([int(item[idx] == value) for item in self.data])
+    #         self._probability_cache[key] = float(count) / total
+    #
+    #     return self._probability_cache.get(key)
 
 
 class Variable(object):
@@ -79,6 +89,10 @@ class Variable(object):
 
     The states a variable can take on (r_i) is stored as `domain'
     """
+    name = None
+    domain = None
+    var_type = None
+
     def __init__(self, name=None, var_type=str, domain=list()):
         self.name = name if name is not None else id(self)
         self.domain = set([var_type(x) for x in domain])
@@ -90,14 +104,4 @@ class Variable(object):
         return item
 
     def __repr__(self):
-        return self.name
-
-
-class Node(object):
-    """
-    A node is a node in the search graph and corresponds to a set of variables.
-    Typically represented in the text by a bold upper-case letter, and can
-    refer to either the set of variables, or the node itself depending on context.
-    """
-    def __init__(self, var_set=list()):
-        self.var_set = var_set
+        return str(self.name)

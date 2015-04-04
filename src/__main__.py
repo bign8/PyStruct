@@ -24,22 +24,22 @@ class Timer(object):
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
-    data = BNSearch('scale')
+    data = BNSearch('flag')
     print timer.stop()
 
-    timer = Timer('Sample Probability Calculations')
-    print data.probability('Class', 'L')
-    print data.probability('Class', 'B')
-    print data.probability('Class', 'R')
-    print timer.stop()
+    # timer = Timer('Sample Probability Calculations')
+    # print data.probability('Class', 'L')
+    # print data.probability('Class', 'B')
+    # print data.probability('Class', 'R')
+    # print timer.stop()
 
     timer = Timer('Calculate Scores')
     data.calculate_scores()
     print timer.stop()
 
-    timer = Timer('Search')
-    data.search()
-    print timer.stop()
+    # timer = Timer('Search')
+    # data.search()
+    # print timer.stop()
 
     pp = pprint.PrettyPrinter(indent=1)
     # pp.pprint(data.score.cache)
