@@ -42,6 +42,8 @@ class DataSet(object):
                 # Generate variables if they aren't preset
                 if not self.variables:
                     self.variables = [Variable() for _ in data]
+                if len(self.variables) != len(data):
+                    continue
                 for variable, value in zip(self.variables, data):
                     # Skip null variables
                     if not variable:
