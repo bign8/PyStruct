@@ -34,14 +34,17 @@ class EntityCache(object):
         if data and X in data:
             del data[X]
 
-    def update(self, X, U, delta, default=0):
+    def update(self, X, U, delta, default=lambda: 0):
         """
         :type X: :class:`data.Variable`
         :type U: set or None
         :type delta: float
+        :param default: using functools.partial can defer default calculation
+        :type default: function
         """
         data = self.cache.setdefault(frozenset(U), {})
-        data.setdefault(X, default)
+        if X not in data:
+            data[X] = default()
         data[X] += delta
 
 

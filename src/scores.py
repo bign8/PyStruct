@@ -1,6 +1,7 @@
 from math import log
 from data import DataSet
 from models import EntityCache
+from functools import partial
 
 
 def K(X_i, PA_i):
@@ -83,13 +84,10 @@ class BN(DataSet):
         :type D_u: set
         :rtype: set
         """
-        idxs = self.magic[X_i][value]
-        return idxs.intersection(D_u)
-        # idx = self.variables.index(X_i)
-        # return [item for item in D_u if item[idx] == value]
+        return self.magic[X_i][value].intersection(D_u)
 
     def build_record_slices(self):
-        # Populate datas tructure with the data indexes
+        # Populate data structure with the data indexes
         self.magic = {}
         for data_idx, record in enumerate(self.data):
             for idx, item in enumerate(record):
@@ -98,7 +96,7 @@ class BN(DataSet):
 
     def calculate_scores(self):
         print 'Updating Scores'
-        self.update_scores(set(), self.data)
+        self.update_scores(set(), len(self.data))
         self.expand_ad_node(-1, set(), set(range(len(self.data))))
         print 'Prune Variables'
         for X in self.variables:
@@ -123,24 +121,22 @@ class BN(DataSet):
         U_union = U.union({X_i})
         for value in X_i.domain:
             D_consistent_idx = self.find_consistent_records(X_i, value, D_u)
-            D_consistent = [self.data[idx] for idx in D_consistent_idx]
-            self.update_scores(U_union, D_consistent)
+            self.update_scores(U_union, len(D_consistent_idx))
             N = len(self.data)
             if len(U) < log(2 * N / log(N)):
                 self.expand_ad_node(self.variables.index(X_i), U_union, D_consistent_idx)
 
-    def update_scores(self, U, D_u):
+    def update_scores(self, U, D_size):
         """
         :type U: set
-        :type D_u: list
+        :type D_u: int
         """
-        D_size = len(D_u)
         delta = D_size * log(D_size) if D_size else 0
         for X in set(self.variables).difference(U):
-            self.score.update(X, U, delta, K(X, U))
+            self.score.update(X, U, delta, partial(K, X, U))
         for X in U:
             key = U.difference({X})
-            self.score.update(X, key, -delta, K(X, key))
+            self.score.update(X, key, -delta, partial(K, X, key))
 
     def prune(self, Y, U, best_score):
         """
