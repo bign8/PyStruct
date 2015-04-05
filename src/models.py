@@ -1,4 +1,25 @@
-from json import dumps
+from time import time as now
+
+
+class Timer(object):
+    def __init__(self, name):
+        self.name = name
+        self._start = now()
+        self._stop = self._start
+
+    def start(self):
+        self._start = now()
+        return self
+
+    def stop(self):
+        self._stop = now()
+        return self
+
+    def __repr__(self):
+        return 'Timer "{}" ran for {:.4f}s'.format(
+            self.name, self._stop - self._start
+        )
+
 
 class EntityCache(object):
     """
@@ -46,7 +67,6 @@ class EntityCache(object):
         if X not in data:
             data[X] = default()
         data[X] += delta
-
 
     def __repr__(self):
         return str(self.__dict__)

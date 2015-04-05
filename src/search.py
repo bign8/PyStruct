@@ -68,8 +68,9 @@
 #                 if neighbor not in openset:
 #                     openset.add(neighbor)
 #     raise Exception('Path not found')
-from scores import BN
+from data import DataSet
 from itertools import chain, combinations
+from models import EntityCache
 from Queue import PriorityQueue
 
 
@@ -78,8 +79,10 @@ def powerset_generator(i):
         yield set(subset)
 
 
-class BNSearch(BN):
+class BNSearch(DataSet):
 
+    best_score = EntityCache()
+    base_score = {}
     parents = {}
     came_from = {}
 

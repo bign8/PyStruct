@@ -1,27 +1,8 @@
 from search import BNSearch
-from time import time as now
+from scores import ScoreBuilder
+from models import Timer
 import pprint
 import json
-
-
-class Timer(object):
-    def __init__(self, name):
-        self.name = name
-        self._start = now()
-        self._stop = self._start
-
-    def start(self):
-        self._start = now()
-        return self
-
-    def stop(self):
-        self._stop = now()
-        return self
-
-    def __repr__(self):
-        return 'Timer "{}" ran for {:.4f}s'.format(
-            self.name, self._stop - self._start
-        )
 
 
 # class Encoder(json.JSONEncoder):
@@ -68,13 +49,11 @@ if __name__ == '__main__':
     data = BNSearch('flag')
     print timer.stop()
 
-    timer = Timer('Build set slices')
-    data.build_record_slices()
-    print timer.stop()
-
     timer = Timer('Calculate Scores')
-    data.calculate_scores()
+    data.score = ScoreBuilder(data.data, data.variables)()
     print timer.stop()
+    # print json.dumps(data.score.cache)
+    exit()
 
     timer = Timer('Search')
     data.search()
