@@ -46,7 +46,6 @@ class ScoreBuilder(object):
 
         print 'Expanding Nodes'
         self.expand_ad_node(-1, set(), set(range(self.N)))
-        return self.score  # TODO: remove this!!!
 
         print 'Prune Variables'
         for X in self.variables:

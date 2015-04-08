@@ -46,14 +46,14 @@ import json
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
-    data = BNSearch('flag')
+    data = BNSearch('scale')
     print timer.stop()
 
     timer = Timer('Calculate Scores')
     data.score = ScoreBuilder(data.data, data.variables)()
     print timer.stop()
     # print json.dumps(data.score.cache)
-    exit()
+    # exit()
 
     timer = Timer('Search')
     data.search()
