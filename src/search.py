@@ -85,6 +85,7 @@ class BNSearch(DataSet):
     best_score = EntityCache()
     base_score = {}
     parents = {}
+    children = {}
     came_from = {}
 
     def search(self):
@@ -114,11 +115,11 @@ class BNSearch(DataSet):
                 if union in closed:
                     continue
                 # Score so far
-                g = self.joint_best_score(X, U)
+                g, parents = self.joint_best_score(X, U)
                 g += self.base_score.get(frozenset(U), 0)
                 # Supposed next score
                 h = sum(
-                    self.joint_best_score(Y, variables.difference({Y}))
+                    self.joint_best_score(Y, variables.difference({Y}))[0]
                     for Y in variables.difference(U)
                 )
                 f = g + h
@@ -127,46 +128,37 @@ class BNSearch(DataSet):
                     open.put((f, union))
                     self.base_score[union] = f
                     self.came_from[union] = U
+                    self.parents[union] = parents
+                    self.children[union] = X
 
-    def rebuild_forward_order_train(self):
+    def build_graph(self):
         goal = frozenset(self.variables)
         train = [goal]
         while goal in self.came_from:
             goal = self.came_from[goal]
             train.insert(0, goal)
-        return train
 
-    def rebuild_parents(self, path):
-        last, nodes, graph = path.pop(0), set(), dict()
-        while path:
-            another_one = path.pop(0)
-            added_node = another_one.difference(last)
-            # added_node = last.difference(another_one)
-            last = another_one
+        parents, leaf = dict(), dict()
+        for node in train[1:]:
+            last_set = frozenset(node)
+            parents[last_set] = self.parents[last_set]
+            leaf[last_set] = self.children[last_set]
 
-            nodes.add(iter(added_node).next())
-            parents = self.find_parents_without_vars(added_node, nodes)
-            graph[added_node] = parents
-        return graph
+        real_graph = dict()
+        for key in parents:
+            real_graph[leaf[key]] = parents[key]
 
-    def find_parents_without_vars(self, node, used):
-        remaining = set(self.variables).difference(used)
-        if not remaining:
-            return set()
-        return min(
-            [
-                (self.score.get(node, p), p, )
-                for p in powerset_generator(remaining) if p
-            ], key=lambda p: p[0]
-        )[1]
-
-    def rebuild_FUCKING_graph(self):
-        pass  # TODO
+        return real_graph
 
     def joint_best_score(self, Y, U):
+        diff = U.difference({Y})
+        if len(U) < 2:
+            return self.score.get(Y, diff), diff
         return min(
-            self.score.get(Y, parents)
-            for parents in powerset_generator(U.difference({Y}))
+            [
+                (self.score.get(Y, parents), parents)
+                for parents in powerset_generator(diff)
+            ], key=lambda x: x[0]
         )
 
     def calculate_parent_graphs(self, Y, U):
@@ -175,8 +167,8 @@ class BNSearch(DataSet):
             score = self.score.get(Y, union)
             if score is None:
                 continue
-            joint_union = self.joint_best_score(Y, union)
-            if score < self.joint_best_score(Y, U) and score < joint_union:
+            joint_union = self.joint_best_score(Y, union)[0]
+            if score < self.joint_best_score(Y, U)[0] and score < joint_union:
                 self.best_score.set(Y, union, score)
             elif self.best_score.get(Y, union) < joint_union:
                 self.best_score.set(Y, union, score)
