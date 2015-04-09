@@ -18,7 +18,7 @@ class BNSearch(DataSet):
     best_score = EntityCache()
     base_score = {}
     parents = {}
-    children = {}
+    leaves = {}
 
     def search(self):
         """
@@ -60,12 +60,12 @@ class BNSearch(DataSet):
                     open.put((f, union))
                     self.base_score[union] = f
                     self.parents[union] = parents
-                    self.children[union] = X
+                    self.leaves[union] = X
 
     def build_graph(self):
         goal, graph = frozenset(self.variables), {}
-        while goal in self.children:
-            leaf = self.children[goal]
+        while goal in self.leaves:
+            leaf = self.leaves[goal]
             graph[leaf] = self.parents[goal]
             goal = goal.difference({leaf})
         return graph
