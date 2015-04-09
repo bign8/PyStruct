@@ -46,6 +46,7 @@ import json
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
+    # data = BNSearch('scale')
     data = BNSearch('flag')
     print timer.stop()
 
@@ -59,20 +60,13 @@ if __name__ == '__main__':
     data.search()
     print timer.stop()
 
-    # TODO: combine rebuild_forward_order_train and rebuild_parents
-    timer = Timer('Forward train BITCH')
-    path = data.rebuild_forward_order_train()
-    print timer.stop()
-
-    timer = Timer('REBUILD actual parents (sorry Bruce Wayne)')
-    parents = data.rebuild_parents(path[:])
+    timer = Timer('REBUILD graph (sorry Bruce Wayne)')
+    parents = data.build_graph()
     print timer.stop()
 
     pp = pprint.PrettyPrinter(indent=1)
-    print 'parents'
+    print 'Real Parent Graph'
     pp.pprint(parents)
-    print 'path'
-    pp.pprint(path)
     # print json.dumps(data.came_from, cls=Encoder)
     # pp.pprint(data.score.cache)
     # pp.pprint(data.best_score.cache)
