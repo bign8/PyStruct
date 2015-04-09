@@ -133,20 +133,18 @@ class BNSearch(DataSet):
 
     def build_graph(self):
         goal = frozenset(self.variables)
-        train = [goal]
-        while goal in self.came_from:
-            goal = self.came_from[goal]
-            train.insert(0, goal)
 
-        parents, leaf = dict(), dict()
-        for node in train[1:]:
-            last_set = frozenset(node)
-            parents[last_set] = self.parents[last_set]
-            leaf[last_set] = self.children[last_set]
+        parents, leaves = {}, {}
+
+        while goal in self.children:
+            parents[goal] = self.parents[goal]
+            leaf = self.children[goal]
+            leaves[goal] = leaf
+            goal = goal.difference({leaf})
 
         real_graph = dict()
         for key in parents:
-            real_graph[leaf[key]] = parents[key]
+            real_graph[leaves[key]] = parents[key]
 
         return real_graph
 
