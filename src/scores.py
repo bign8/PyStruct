@@ -97,8 +97,9 @@ class ScoreBuilder(object):
         """
         for X in self.vset.difference(U):
             union = U.union({X})
-            if self.score.get(X, union) < best_score:
-                self.prune(Y, union, self.score.get(X, union))
+            score = self.score.get(X, union)
+            if score < best_score:
+                self.prune(Y, union, score)
             else:
                 self.score.delete(X, union)
                 self.prune(Y, union, best_score)

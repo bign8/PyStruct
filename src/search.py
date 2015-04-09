@@ -81,6 +81,7 @@ def powerset_generator(i):
 
 class BNSearch(DataSet):
 
+    score = EntityCache()  # overridden in __main__
     best_score = EntityCache()
     base_score = {}
     parents = {}
@@ -91,11 +92,10 @@ class BNSearch(DataSet):
         :type D: :class:`scores.BN`
         """
         open = PriorityQueue()
-        closed = []
+        closed = set()
 
         # Calculate parent graph
         for X in self.variables:
-            self.best_score.set(X, set(), self.score.get(X, set()))
             self.calculate_parent_graphs(X, set())
 
         variables = set(self.variables)
@@ -108,7 +108,7 @@ class BNSearch(DataSet):
                 print 'Number of expansions:', counter
                 print 'The best score is', self.base_score.get(U)
                 return
-            closed.append(frozenset(U))
+            closed.add(frozenset(U))
             for X in variables.difference(U):
                 union = frozenset(U.union({X}))
                 if union in closed:
@@ -121,9 +121,9 @@ class BNSearch(DataSet):
                     self.joint_best_score(Y, variables.difference({Y}))
                     for Y in variables.difference(U)
                 )
-                print union, U, h, g
                 f = g + h
-                if f < self.base_score.setdefault(union, f + 1):
+                print union, U, f
+                if f < self.base_score.get(union, f + 1):
                     open.put((f, union))
                     self.base_score[union] = f
                     self.came_from[union] = U
@@ -133,7 +133,7 @@ class BNSearch(DataSet):
         train = [goal]
         while goal in self.came_from:
             goal = self.came_from[goal]
-            train.append(goal)
+            train.insert(0, goal)
         return train
 
     def rebuild_parents(self, path):
@@ -141,6 +141,7 @@ class BNSearch(DataSet):
         while path:
             another_one = path.pop(0)
             added_node = another_one.difference(last)
+            # added_node = last.difference(another_one)
             last = another_one
 
             nodes.add(iter(added_node).next())
@@ -163,7 +164,10 @@ class BNSearch(DataSet):
         pass  # TODO
 
     def joint_best_score(self, Y, U):
-        return min(self.score.get(Y, parents) for parents in powerset_generator(U))
+        return min(
+            self.score.get(Y, parents)
+            for parents in powerset_generator(U.difference({Y}))
+        )
 
     def calculate_parent_graphs(self, Y, U):
         for X in set(self.variables).difference(U):

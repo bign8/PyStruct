@@ -46,7 +46,7 @@ import json
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
-    data = BNSearch('scale')
+    data = BNSearch('flag')
     print timer.stop()
 
     timer = Timer('Calculate Scores')
@@ -59,12 +59,13 @@ if __name__ == '__main__':
     data.search()
     print timer.stop()
 
+    # TODO: combine rebuild_forward_order_train and rebuild_parents
     timer = Timer('Forward train BITCH')
     path = data.rebuild_forward_order_train()
     print timer.stop()
 
     timer = Timer('REBUILD actual parents (sorry Bruce Wayne)')
-    parents = data.rebuild_parents(path[::-1])
+    parents = data.rebuild_parents(path[:])
     print timer.stop()
 
     pp = pprint.PrettyPrinter(indent=1)
