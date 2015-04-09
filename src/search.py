@@ -72,6 +72,7 @@ class BNSearch(DataSet):
 
     def joint_best_score(self, Y, U):
         diff = U.difference({Y})
+        # TODO: ensure this logic is correct
         if len(U) < 2:
             return self.score.get(Y, diff), diff
         return min(
