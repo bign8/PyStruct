@@ -133,7 +133,6 @@ class BNSearch(DataSet):
 
     def build_graph(self):
         goal = frozenset(self.variables)
-
         parents, leaves = {}, {}
 
         while goal in self.children:
@@ -142,11 +141,7 @@ class BNSearch(DataSet):
             leaves[goal] = leaf
             goal = goal.difference({leaf})
 
-        real_graph = dict()
-        for key in parents:
-            real_graph[leaves[key]] = parents[key]
-
-        return real_graph
+        return {leaves[key]: parents[key] for key in parents}
 
     def joint_best_score(self, Y, U):
         diff = U.difference({Y})
