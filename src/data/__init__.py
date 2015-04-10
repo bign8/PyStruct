@@ -21,8 +21,6 @@ class DataSet(object):
         :type name: str
         """
         self.name = name
-        self._probability_cache = {}  # probability cache
-        self._join_probability_cache = {}  # join probability cache
 
         # Build variables list from file
         try:
@@ -54,35 +52,6 @@ class DataSet(object):
         # Prune null variables
         self.variables = [v for v in self.variables if v]
         self.variable_map = {v.name: v for v in self.variables}
-
-    # def generate_probability_key(self, name, value):
-    #     if name not in self.variable_map:
-    #         raise AttributeError('Variable not available')
-    #     if value not in self.variable_map.get(name).domain:
-    #         raise NameError('Value not available in Variable range')
-    #     return '{}-{}'.format(name, value)
-    #
-    # def probability(self, name, value):
-    #     """
-    #     Compute the probability of a Variable being a Value
-    #
-    #     :param name: The name of the variable we are looking for
-    #     :type name: basestring
-    #     :param value: The value of the variable we are looking for
-    #     :type value: basestring
-    #     :return: Probability of `variable' being a `value'
-    #     :rtype: float
-    #     """
-    #     key = self.generate_probability_key(name, value)
-    #
-    #     # Compute the probability of an instance happening in the DataSet
-    #     if name not in self._probability_cache:
-    #         total = len(self.data)
-    #         idx = self.variables.index(self.variable_map.get(name))
-    #         count = sum([int(item[idx] == value) for item in self.data])
-    #         self._probability_cache[key] = float(count) / total
-    #
-    #     return self._probability_cache.get(key)
 
 
 class Variable(object):

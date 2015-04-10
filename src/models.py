@@ -3,6 +3,8 @@ from time import time as now
 
 class Timer(object):
     def __init__(self, name):
+        self._line = '-'.join(['-'] * 10)
+        print '{} Start: {} {}'.format(self._line, name, self._line)
         self.name = name
         self._start = now()
         self._stop = self._start
@@ -13,6 +15,7 @@ class Timer(object):
 
     def stop(self):
         self._stop = now()
+        print '{} Stop: {} {}'.format(self._line, self.name, self._line)
         return self
 
     def __repr__(self):
@@ -30,13 +33,18 @@ class EntityCache(object):
     def __init__(self):
         self.cache = {}
 
+    def _key(self, U):
+        # TODO: use something better than a string
+        names = sorted([u.name for u in U])
+        return ','.join(names)
+
     def get(self, X, U, default=None):
         """
         :type X: :class:`data.Variable`
         :type U: set
         :rtype: float
         """
-        return self.cache.get(frozenset(U), {}).get(X, default)
+        return self.cache.get(self._key(U), {}).get(X.name, default)
 
     def set(self, X, U, value):
         """
@@ -44,16 +52,16 @@ class EntityCache(object):
         :type U: set or None
         :type value: float
         """
-        self.cache.setdefault(frozenset(U), {})[X] = value
+        self.cache.setdefault(self._key(U), {})[X.name] = value
 
     def delete(self, X, U):
         """
         :type X: :class:`data.Variable`
         :type U: set or None
         """
-        data = self.cache.get(frozenset(U))
-        if data and X in data:
-            del data[X]
+        data = self.cache.get(self._key(U))
+        if data and X.name in data:
+            del data[X.name]
 
     def update(self, X, U, delta, default=lambda: 0):
         """
@@ -63,10 +71,10 @@ class EntityCache(object):
         :param default: using functools.partial can defer default calculation
         :type default: function
         """
-        data = self.cache.setdefault(frozenset(U), {})
-        if X not in data:
-            data[X] = default()
-        data[X] += delta
+        data = self.cache.setdefault(self._key(U), {})
+        if X.name not in data:
+            data[X.name] = default()
+        data[X.name] += delta
 
     def __repr__(self):
         return str(self.__dict__)

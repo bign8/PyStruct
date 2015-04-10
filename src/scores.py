@@ -1,3 +1,5 @@
+import pickle
+from os import path
 from math import log
 from models import EntityCache
 from functools import partial
@@ -40,16 +42,29 @@ class ScoreBuilder(object):
                 top = self.slices.setdefault(self.variables[idx], dict())
                 top.setdefault(item, set()).add(data_idx)
 
-    def __call__(self):
-        print 'Updating Scores'
-        self.update_scores(set(), self.N)
+    def __call__(self, name):
+        file_path = path.abspath(path.join(
+            path.dirname(__file__), 'data', name, '{}.score.p'.format(name)
+        ))
+        if path.isfile(file_path):
+            print 'Found Generated Scores - Loading'
+            with open(file_path, 'rb') as f:
+                self.score.cache = pickle.load(f)
+            print self.score
+        else:
+            print 'Generating Score Cache'
+            self.update_scores(set(), self.N)
 
-        print 'Expanding Nodes'
-        self.expand_ad_node(-1, set(), set(range(self.N)))
+            print 'Expanding Nodes'
+            self.expand_ad_node(-1, set(), set(range(self.N)))
 
-        print 'Prune Variables'
-        for X in self.variables:
-            self.prune(X, set(), self.score.get(X, set()))
+            print 'Prune Variables'
+            for X in self.variables:
+                self.prune(X, set(), self.score.get(X, set()))
+
+            print 'Storing Generated Scored'
+            with open(file_path, 'wb') as f:
+                pickle.dump(self.score.cache, f)
 
         return self.score
 
