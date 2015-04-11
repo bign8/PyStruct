@@ -9,23 +9,21 @@ if __name__ == '__main__':
     while True:
         try:
             name, weight = lib.start()
+            print 'Search "{}" with weight of {:.6f}'.format(name, weight)
 
-            timer = Timer('Fetching Variables')
             data = BNSearch(name)
-            print timer.stop()
-
-            timer = Timer('Calculate Scores')
             data.score = ScoreBuilder(data.data, data.variables)(data.name)
-            print timer.stop()
-
-            timer = Timer('Search')
             score = data.search(weight)
-            print timer.stop()
-
-            timer = Timer('REBUILD graph (sorry Bruce Wayne)')
             graph = data.build_graph()
-            print timer.stop()
 
-            lib.end(name, weight, score, graph)
+            # Clean graph for transport
+            clean = {}
+            for key, value in graph.iteritems():
+                clean[key.name] = ','.join(v.name for v in value)
+
+            print 'Finish "{}" with score  of {:.4f}'.format(name, score)
+            lib.end(name, weight, score, clean)
         except lib.socket.error:
             pass
+        except KeyboardInterrupt:
+            break

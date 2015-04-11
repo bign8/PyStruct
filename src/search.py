@@ -14,13 +14,16 @@ class BNSearch(DataSet):
     TODO:
     - Delete data structures once they are no longer necessary
     """
-    score = EntityCache()  # overridden in __main__
-    best_score = EntityCache()
-    base_score = {}
-    parents = {}
-    leaves = {}
 
-    def search(self, weight=1):
+    def __init__(self, name):
+        super(BNSearch, self).__init__(name)
+        self.score = EntityCache()
+        self.best_score = EntityCache()
+        self.base_score = {}
+        self.parents = {}
+        self.leaves = {}
+
+    def search(self, weight=1, debug=False):
         """
         :type D: :class:`scores.BN`
         """
@@ -38,8 +41,9 @@ class BNSearch(DataSet):
             counter += 1
             U = open.get()[1]
             if U == frozenset(self.variables):
-                print 'Number of expansions:', counter
-                print 'The best score is', self.base_score.get(U)
+                if debug:
+                    print 'Number of expansions:', counter
+                    print 'The best score is', self.base_score.get(U)
                 return self.base_score.get(U)
             closed.add(frozenset(U))
             for X in variables.difference(U):
@@ -55,7 +59,8 @@ class BNSearch(DataSet):
                     for Y in variables.difference(U)
                 )
                 f = g + h
-                print union, U, f
+                if debug:
+                    print union, U, f
                 if f < self.base_score.get(union, f + 1):
                     open.put((f, union))
                     self.base_score[union] = f

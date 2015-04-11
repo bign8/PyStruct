@@ -10,11 +10,11 @@ if __name__ == '__main__':
     print timer.stop()
 
     timer = Timer('Calculate Scores')
-    data.score = ScoreBuilder(data.data, data.variables)(data.name)
+    data.score = ScoreBuilder(data.data, data.variables)(data.name, debug=True)
     print timer.stop()
 
     timer = Timer('Search')
-    data.search()
+    data.search(debug=True)
     print timer.stop()
 
     timer = Timer('REBUILD graph (sorry Bruce Wayne)')
