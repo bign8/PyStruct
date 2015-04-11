@@ -2,6 +2,22 @@ import SocketServer
 from net import lib
 
 
+class Memory(object):
+    score = None
+    graph = None
+    name = None
+    weight = None
+    complete = False
+
+
+class MyServer(SocketServer.TCPServer):
+    data = dict()
+
+    def save(self):
+        # TODO: store data to disk
+        pass
+
+
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     def get(self):
         return lib.get(self.request)
@@ -10,19 +26,28 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         lib.send(self.request, msg)
 
     def handle_start(self):
-        self.send((1.2, 'scale'))
+        # TODO: make this smart
+        self.send(('scale', 1.2))
 
     def handle_end(self):
-        score, graph = self.get()
-        if self.server.best_score > score or not self.server.best_score:
-            self.server.best_score = score
-            self.server.best_graph = graph
-            print 'New best score of {}'.format(score)
+        name, weight, score, graph = self.get()
+        data = self.server.data.setdefault(name, Memory())
+        if data.score > score or not data.score:
+            data.score = score
+            data.graph = graph
+            data.weight = weight
+            data.name = name
+            print 'New best score of {} for {}'.format(score, name)
+            if weight <= 1:
+                print 'Completed Search on {}'.format(name)
+                data.complete = True
+            self.server.save()
         else:
-            print 'Worse score of {}'.format(score)
+            print 'Worse score of {} for {}'.format(score, name)
 
     def handle_get(self):
-        self.send(self.server.best)
+        data = self.server.data.setdefault(self.get(), Memory())
+        self.send((data.score, data.complete))
 
     def handle_ping(self):
         self.send('PONG')
@@ -42,8 +67,6 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             print '"{}" command not found'.format(command)
 
 if __name__ == "__main__":
-    server = SocketServer.TCPServer((lib.HOST, lib.PORT), MyTCPHandler)
-    server.best_score = None
-    server.best_graph = None
+    server = MyServer((lib.HOST, lib.PORT), MyTCPHandler)
     print 'Serving at {}:{}'.format(*server.server_address)
     server.serve_forever()

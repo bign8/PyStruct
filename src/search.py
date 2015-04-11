@@ -20,7 +20,7 @@ class BNSearch(DataSet):
     parents = {}
     leaves = {}
 
-    def search(self):
+    def search(self, weight=1):
         """
         :type D: :class:`scores.BN`
         """
@@ -40,7 +40,7 @@ class BNSearch(DataSet):
             if U == frozenset(self.variables):
                 print 'Number of expansions:', counter
                 print 'The best score is', self.base_score.get(U)
-                return
+                return self.base_score.get(U)
             closed.add(frozenset(U))
             for X in variables.difference(U):
                 union = frozenset(U.union({X}))
@@ -61,6 +61,7 @@ class BNSearch(DataSet):
                     self.base_score[union] = f
                     self.parents[union] = parents
                     self.leaves[union] = X
+        # raise Exception('Search Cannot Find Goal')
 
     def build_graph(self):
         goal, graph = frozenset(self.variables), {}
