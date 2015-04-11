@@ -1,7 +1,6 @@
 from net import lib
 from search import BNSearch
 from scores import ScoreBuilder
-from models import Timer
 
 
 if __name__ == '__main__':
@@ -16,13 +15,8 @@ if __name__ == '__main__':
             score = data.search(weight)
             graph = data.build_graph()
 
-            # Clean graph for transport
-            clean = {}
-            for key, value in graph.iteritems():
-                clean[key.name] = ','.join(v.name for v in value)
-
             print 'Finish "{}" with score  of {:.4f}'.format(name, score)
-            lib.end(name, weight, score, clean)
+            lib.end(name, weight, score, graph)
         except lib.socket.error:
             pass
         except KeyboardInterrupt:

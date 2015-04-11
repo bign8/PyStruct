@@ -72,7 +72,7 @@ class BNSearch(DataSet):
         goal, graph = frozenset(self.variables), {}
         while goal in self.leaves:
             leaf = self.leaves[goal]
-            graph[leaf] = self.parents[goal]
+            graph[leaf.name] = ','.join(v.name for v in self.parents[goal])
             goal = goal.difference({leaf})
         return graph
 
