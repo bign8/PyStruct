@@ -1,6 +1,6 @@
 import pickle
 import socket
-from time import sleep
+from models import Delay
 
 # PORT = 8880
 # MASTER = '192.168.1.20'
@@ -34,14 +34,6 @@ def _wait():
     """
     Waits until a connection to the server is available
     """
-    class Delay(object):
-        past, now = 1, 1
-
-        def __call__(self):
-            print 'Sleeping for {}s'.format(self.now)
-            sleep(self.now)
-            self.past, self.now = self.now, self.now + self.past
-
     def ping():
         sock, msg = None, 'PING'
         try:

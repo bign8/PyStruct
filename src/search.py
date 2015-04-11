@@ -61,7 +61,7 @@ class BNSearch(DataSet):
                     self.base_score[union] = f
                     self.parents[union] = parents
                     self.leaves[union] = X
-        # raise Exception('Search Cannot Find Goal')
+        raise Exception('Search Cannot Find Goal')
 
     def build_graph(self):
         goal, graph = frozenset(self.variables), {}
