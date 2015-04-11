@@ -1,41 +1,58 @@
-import socket
 import sys
-import pickle
+from net import lib
+from time import sleep
 
-HOST, PORT = "localhost", 9991
-data = " ".join(sys.argv[1:])
+msg = " ".join(sys.argv[1:])
 
 
 def start():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+    sock = lib.init()
     try:
-        sock.connect((HOST, PORT))
-        sock.sendall('S')
-        message_length = sock.recv(8)
-        message = sock.recv(int(message_length))
+        sock.send('S')
+        message = lib.get(sock)
     finally:
         sock.close()
 
-    return pickle.loads(message)
+    return message
 
 
-def end():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def ping():
+    sock, msg = None, 'PING'
     try:
-        sock.connect((HOST, PORT))
-        sock.sendall('E')
-        data = pickle.dumps({
-            'S': 10000,
-            'G': {
+        sock = lib.init()
+        sock.send('P')
+        msg = lib.get(sock)
+    except lib.socket.error:
+        pass
+    finally:
+        if sock:
+            sock.close()
+    return msg == 'PONG'
+
+
+class Delay(object):
+    past = 1
+    now = 1
+
+    def __call__(self):
+        print 'Sleeping for {}s'.format(self.now)
+        sleep(self.now)
+        self.past, self.now = self.now, self.now + self.past
+
+
+if __name__ == '__main__':
+    delay = Delay()
+    while True:
+        try:
+            if not ping():
+                delay()
+                continue
+
+            print start()
+            sleep(10)
+            lib.end(float(msg), {
                 'asdf': ['asd', 'ssdfg'],
                 'regqer': ['as', 'sfdgn']
-            }
-        })
-        sock.sendall('{0:08d}'.format(len(data)) + data)
-    finally:
-        sock.close()
-
-# TODO: make start smart enough to re-request for server (if dead)
-print start()
-end()
+            })
+        except lib.socket.error:
+            pass
