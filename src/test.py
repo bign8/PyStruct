@@ -6,7 +6,7 @@ from pprint import PrettyPrinter
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
-    data = BNSearch('flag')
+    data = BNSearch('adult')
     print timer.stop()
 
     timer = Timer('Calculate Scores')
