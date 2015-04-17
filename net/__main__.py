@@ -1,5 +1,7 @@
 import SocketServer
 from net import lib
+from sys import argv
+from random import choice
 
 
 class Memory(object):
@@ -8,6 +10,9 @@ class Memory(object):
     name = None
     weight = None
     complete = False
+
+    def __repr__(self):
+        return str(self.__dict__)
 
 
 class MyServer(SocketServer.TCPServer):
@@ -26,12 +31,26 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         lib.send(self.request, msg)
 
     def handle_start(self):
-        # TODO: make this smart
-        self.send(('scale', 1.2))
+        name = argv[1] if argv[1] else None
+        weight = 0
+        if name:
+            weights = [1.2, 1.1, 1.08, 1.04, 1]
+            try:
+                memory = self.server.data.setdefault(name, Memory())
+                weight = choice([
+                    w for w in weights
+                    if not memory.weight or memory.weight > w
+                ])
+            except IndexError:
+                name = None
+        self.send((name, weight))
 
     def handle_end(self):
         name, weight, score, graph = self.get()
         data = self.server.data.setdefault(name, Memory())
+        if weight < data.weight:
+            data.weight = weight
+            self.server.save()
         if data.score > score or not data.score:
             data.score = score
             data.graph = graph

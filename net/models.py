@@ -2,7 +2,6 @@ from time import sleep
 
 
 class Delay:
-
     def __init__(self, cap=600, base=5, step=10):
         self.cap = cap
         self.base = base
