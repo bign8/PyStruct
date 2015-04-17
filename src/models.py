@@ -33,7 +33,8 @@ class EntityCache(object):
     def __init__(self):
         self.cache = {}
 
-    def _key(self, U):
+    @staticmethod
+    def _key(U):
         # TODO: use something better than a string
         names = sorted([u.name for u in U])
         return ','.join(names)

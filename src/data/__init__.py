@@ -65,7 +65,7 @@ class Variable(object):
     var_type = None
 
     def __init__(self, name=None, var_type=str, domain=list()):
-        self.name = name if name is not None else id(self)
+        self.name = name if name is not None else str(id(self))
         self.domain = set([var_type(x) for x in domain])
         self.var_type = var_type
 

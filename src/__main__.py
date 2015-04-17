@@ -1,28 +1,30 @@
+from net import lib, models
 from search import BNSearch
 from scores import ScoreBuilder
-from models import Timer
-from pprint import PrettyPrinter
 
 
 if __name__ == '__main__':
-    timer = Timer('Fetching Variables')
-    data = BNSearch('flag')
-    print timer.stop()
+    # TODO: add another thread to watch for updated scores
+    delay = models.Delay()
+    while True:
+        try:
+            name, weight = lib.start()
+            if not name:
+                print 'No job'
+                delay()
+                continue
+            else:
+                delay.reset()
+            print 'Search "{}" with weight of {:.6f}'.format(name, weight)
 
-    timer = Timer('Calculate Scores')
-    data.score = ScoreBuilder(data.data, data.variables)(data.name)
-    print timer.stop()
+            data = BNSearch(name)
+            data.score = ScoreBuilder(data.data, data.variables)(data.name)
+            score = data.search(weight)
+            graph = data.build_graph()
 
-    timer = Timer('Search')
-    data.search()
-    print timer.stop()
-
-    timer = Timer('REBUILD graph (sorry Bruce Wayne)')
-    parents = data.build_graph()
-    print timer.stop()
-
-    pp = PrettyPrinter(indent=1)
-    print 'Real Parent Graph'
-    pp.pprint(parents)
-    # pp.pprint(data.score.cache)
-    # pp.pprint(data.best_score.cache)
+            print 'Finish "{}" with score  of {:.4f}'.format(name, score)
+            lib.end(name, weight, score, graph)
+        except lib.socket.error:
+            pass
+        except KeyboardInterrupt:
+            break
