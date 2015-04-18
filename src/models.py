@@ -24,6 +24,10 @@ class Timer(object):
         )
 
 
+def key(U, X):
+    return tuple([frozenset(U), X])
+
+
 class EntityCache(object):
     """
     TODOs:
@@ -33,19 +37,13 @@ class EntityCache(object):
     def __init__(self):
         self.cache = {}
 
-    @staticmethod
-    def _key(U):
-        # TODO: use something better than a string
-        names = sorted([u.name for u in U])
-        return ','.join(names)
-
     def get(self, X, U, default=None):
         """
         :type X: :class:`data.Variable`
         :type U: set
         :rtype: float
         """
-        return self.cache.get(self._key(U), {}).get(X.name, default)
+        return self.cache.get(key(U, X), default)
 
     def set(self, X, U, value):
         """
@@ -53,16 +51,16 @@ class EntityCache(object):
         :type U: set or None
         :type value: float
         """
-        self.cache.setdefault(self._key(U), {})[X.name] = value
+        self.cache[key(U, X)] = value
 
     def delete(self, X, U):
         """
         :type X: :class:`data.Variable`
         :type U: set or None
         """
-        data = self.cache.get(self._key(U))
-        if data and X.name in data:
-            del data[X.name]
+        fob = key(U, X)
+        if fob in self.cache:
+            del self.cache[fob]
 
     def update(self, X, U, delta, default=lambda: 0):
         """
@@ -72,10 +70,10 @@ class EntityCache(object):
         :param default: using functools.partial can defer default calculation
         :type default: function
         """
-        data = self.cache.setdefault(self._key(U), {})
-        if X.name not in data:
-            data[X.name] = default()
-        data[X.name] += delta
+        fob = key(U, X)
+        if fob not in self.cache:
+            self.cache[fob] = default()
+        self.cache[fob] += delta
 
     def __repr__(self):
         return str(self.__dict__)

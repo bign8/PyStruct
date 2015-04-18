@@ -51,7 +51,25 @@ class DataSet(object):
 
         # Prune null variables
         self.variables = [v for v in self.variables if v]
+        [v.finish(self.data, idx) for idx, v in enumerate(self.variables)]
         self.variable_map = {v.name: v for v in self.variables}
+
+
+def is_int(test):
+    try:
+        int(test)
+        return True
+    except ValueError:
+        return False
+
+
+def binning(bins, maximum, minimum):
+    span = maximum - minimum
+
+    def test(value):
+        return (int(value) - minimum) * (bins - 1) / span
+
+    return test
 
 
 class Variable(object):
@@ -73,6 +91,13 @@ class Variable(object):
         item = self.var_type(value.strip())
         self.domain.add(item)
         return item
+
+    def finish(self, data, idx):
+        if len(self.domain) > 10 and all([is_int(x) for x in self.domain]):
+            ints = [int(x) for x in self.domain]
+            self.var_type = binning(10, min(ints), max(ints))
+            for item in data:
+                item[idx] = self.var_type(item[idx])
 
     def __repr__(self):
         return str(self.name)

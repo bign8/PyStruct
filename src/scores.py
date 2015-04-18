@@ -4,6 +4,9 @@ from math import log
 from models import EntityCache
 from functools import partial
 
+
+prod = lambda items: reduce(lambda x, y: x * y, items, 1)
+
 """
 Algorithms from Table 4.6
 """
@@ -16,7 +19,7 @@ def K(X_i, PA_i):
     :rtype: float
     """
     items = [len(x_l.domain) for x_l in PA_i]
-    return (len(X_i.domain) - 1) * reduce(lambda x, y: x * y, items, 1)
+    return (len(X_i.domain) - 1) * prod(items)
 
 
 class ScoreBuilder(object):
@@ -75,15 +78,15 @@ class ScoreBuilder(object):
         return self.score
 
     def expand_ad_node(self, i, U, D_u):
-            """
-            :type i: int
-            :param U: Node currently being expanded (set of Variables)
-            :type U: set
-            :param D_u: Indexes corresponding to the records consistent with U
-            :type D_u: set
-            """
-            for variable in self.variables[i + 1:]:
-                self.expand_vary_node(variable, U, D_u)
+        """
+        :type i: int
+        :param U: Node currently being expanded (set of Variables)
+        :type U: set
+        :param D_u: Indexes corresponding to the records consistent with U
+        :type D_u: set
+        """
+        for variable in self.variables[i + 1:]:
+            self.expand_vary_node(variable, U, D_u)
 
     def expand_vary_node(self, X_i, U, D_u):
         """
@@ -126,10 +129,10 @@ class ScoreBuilder(object):
                 self.prune(Y, union, best_score)
 
     def find_consistent_records(self, X_i, value, D_u):
-            """
-            :type X_i: :class:`data.Variable`
-            :type value: object
-            :type D_u: set
-            :rtype: set
-            """
-            return self.slices[X_i][value].intersection(D_u)
+        """
+        :type X_i: :class:`data.Variable`
+        :type value: object
+        :type D_u: set
+        :rtype: set
+        """
+        return self.slices[X_i][X_i.var_type(value)].intersection(D_u)

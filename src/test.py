@@ -2,11 +2,12 @@ from search import BNSearch
 from scores import ScoreBuilder
 from models import Timer
 from pprint import PrettyPrinter
+from sys import argv
 
 
 if __name__ == '__main__':
     timer = Timer('Fetching Variables')
-    data = BNSearch('adult')
+    data = BNSearch(argv[1] if len(argv) > 1 else 'scale')
     print timer.stop()
 
     timer = Timer('Calculate Scores')

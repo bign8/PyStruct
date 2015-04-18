@@ -31,7 +31,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         lib.send(self.request, msg)
 
     def handle_start(self):
-        name = argv[1] if argv[1] else None
+        name = argv[1] if len(argv) > 1 else None
         weight = 0
         if name:
             weights = [1.2, 1.1, 1.08, 1.04, 1]
