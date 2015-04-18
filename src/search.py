@@ -58,7 +58,7 @@ class BNSearch(DataSet):
                     self.joint_best_score(Y, variables.difference({Y}))[0]
                     for Y in variables.difference(U)
                 )
-                f = g + h
+                f = g + weight * h
                 if debug:
                     print union, U, f
                 if f < self.base_score.get(union, f + 1):
