@@ -6,8 +6,15 @@ class Bar(object):
     def __init__(self):
         _, self.width = get_terminal_size()
         self.width -= 14
+        self.base = -1
 
-    def __call__(self, percent):
+    def set_base(self, base, debug=False):
+        if debug:
+            print 'Progress cap set at {}'.format(base)
+        self.base = base
+
+    def __call__(self, count):
+        percent = count / self.base
         fin = int(percent * self.width)
         remain = self.width - fin
         bar = ''.join([u'\u2588'] * fin) + ''.join(['-'] * remain)

@@ -40,7 +40,10 @@ class DataSet(object):
 
                 # Generate variables if they aren't preset
                 if not self.variables:
-                    self.variables = [Variable() for _ in data]
+                    self.variables = [
+                        Variable('{}-{}'.format(name, i))
+                        for i, _ in enumerate(data)
+                    ]
                 if len(self.variables) != len(data):
                     continue
                 for variable, value in zip(self.variables, data):
@@ -91,8 +94,8 @@ class Variable(object):
     domain = None
     var_type = None
 
-    def __init__(self, name=None, var_type=str, domain=list()):
-        self.name = name if name is not None else str(id(self))
+    def __init__(self, name, var_type=str, domain=list()):
+        self.name = name
         self.domain = set([var_type(x) for x in domain])
         self.var_type = var_type
 
