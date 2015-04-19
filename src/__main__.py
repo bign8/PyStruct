@@ -1,6 +1,5 @@
 from net import lib, models
-from threading import Thread
-from time import sleep
+from threading import Thread, Event
 from base import procedure
 
 
@@ -9,17 +8,18 @@ class Monitor(Thread):
         super(Monitor, self).__init__(**kwargs)
         self.complete = False
         self.score = 1e9
-        self.kill_me = False
+        self.event = Event()
 
     def run(self):
-        while not self.kill_me:
+        while not self.event.is_set():
             score, self.complete = lib.update(self.name)
             if score:
                 self.score = score
-            sleep(10)
+            self.event.wait(10)
 
     def stop(self):
-        self.kill_me = True
+        print 'Killing monitor'
+        self.event.set()
         self.join()
 
 

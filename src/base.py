@@ -20,7 +20,6 @@ def procedure(name, weight=1, monitor=None):
     finally:
         print timer.stop()
         if monitor:
-            print 'Killing monitor'
             monitor.stop()
 
     timer = Timer('REBUILD graph (sorry Bruce Wayne)')
