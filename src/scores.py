@@ -3,6 +3,7 @@ from os import path
 from math import log
 from models import EntityCache
 from functools import partial
+from progress import Bar
 
 
 prod = lambda items: reduce(lambda x, y: x * y, items, 1)
@@ -31,7 +32,7 @@ class ScoreBuilder(object):
         """
         self.N = len(data)
         self.score = EntityCache()
-        self.variables = variables  # TODO: sort based on domain size
+        self.variables = variables
         self.vset = set(variables)
 
         # Pre-build slices
@@ -42,8 +43,9 @@ class ScoreBuilder(object):
         """ Populate data structure with the data indexes """
         for data_idx, record in enumerate(data):
             for idx, item in enumerate(record):
-                top = self.slices.setdefault(self.variables[idx], dict())
-                top.setdefault(item, set()).add(data_idx)
+                variable = self.variables[idx]
+                top = self.slices.setdefault(variable, dict())
+                top.setdefault(variable.var_type(item), set()).add(data_idx)
 
     def __call__(self, name, debug=False):
         file_path = path.abspath(path.join(
@@ -63,12 +65,22 @@ class ScoreBuilder(object):
 
             if debug:
                 print 'Expanding Nodes'
-            self.expand_ad_node(-1, set(), set(range(self.N)))
+            self.cap = log(2 * self.N / log(self.N))
+            counter = self.count_bitches()
+            print counter
+            self.progress = Bar()
+            self.expand_ad_node(-1, set(), set(range(self.N)), counter)
+            # exit()
 
             if debug:
                 print 'Prune Variables'
             for X in self.variables:
                 self.prune(X, set(), self.score.get(X, set()))
+
+            # Fuck if I know
+            for key, value in self.score.cache.iteritems():
+                if value < 0:
+                    self.score.cache[key] = 0
 
             if debug:
                 print 'Storing Generated Scored'
@@ -77,7 +89,15 @@ class ScoreBuilder(object):
 
         return self.score
 
-    def expand_ad_node(self, i, U, D_u):
+    def count_bitches(self, i=-1, depth=0):
+        size = 1
+        for variable in self.variables[i + 1:]:
+            if depth < self.cap:
+                count = self.count_bitches(self.variables.index(variable), depth + 1)
+                size += count * len(variable.domain)
+        return float(size)
+
+    def expand_ad_node(self, i, U, D_u, countee, counter=0):
         """
         :type i: int
         :param U: Node currently being expanded (set of Variables)
@@ -85,10 +105,14 @@ class ScoreBuilder(object):
         :param D_u: Indexes corresponding to the records consistent with U
         :type D_u: set
         """
+        counter += 1
+        # print counter / countee, counter, countee
+        self.progress(counter / countee)
         for variable in self.variables[i + 1:]:
-            self.expand_vary_node(variable, U, D_u)
+            counter = self.expand_vary_node(variable, U, D_u, countee, counter)
+        return counter
 
-    def expand_vary_node(self, X_i, U, D_u):
+    def expand_vary_node(self, X_i, U, D_u, countee, counter):
         """
         :type X_i: :class:`data.Variable`
         :type U: set
@@ -98,15 +122,18 @@ class ScoreBuilder(object):
         for value in X_i.domain:
             D_idx = self.find_consistent_records(X_i, value, D_u)
             self.update_scores(U_union, len(D_idx))
-            if len(U) < log(2 * self.N / log(self.N)):
-                self.expand_ad_node(self.variables.index(X_i), U_union, D_idx)
+            if len(U) < self.cap:
+                counter = self.expand_ad_node(self.variables.index(X_i), U_union, D_idx, countee, counter)
+        return counter
 
     def update_scores(self, U, D_size):
         """
         :type U: set
         :type D_u: int
         """
-        delta = D_size * log(D_size) if D_size else 0
+        if not D_size:
+            return
+        delta = D_size * log(D_size)
         for X in self.vset.difference(U):
             self.score.update(X, U, delta, partial(K, X, U))
         for X in U:

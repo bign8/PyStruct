@@ -1,4 +1,5 @@
 from os import path
+from functools import partial
 
 
 class DataSet(object):
@@ -54,22 +55,30 @@ class DataSet(object):
         [v.finish(self.data, idx) for idx, v in enumerate(self.variables)]
         self.variable_map = {v.name: v for v in self.variables}
 
+        # Order variables and data by domain size
+        sorts = sorted(self.variables, key=lambda x: len(x.domain))[::-1]
+        new_data = []
+        for item in self.data:
+            new_item = [None] * len(item)
+            for idx, variable in enumerate(self.variables):
+                new_item[sorts.index(variable)] = item[idx]
+            new_data.append(new_item)
+        self.data = new_data
+        self.variables = sorts
+        print [v.domain for v in self.variables]
 
-def is_int(test):
+
+def is_num(test):
     try:
-        int(test)
+        float(test)
         return True
     except ValueError:
         return False
 
 
-def binning(bins, maximum, minimum):
+def bitchen_spaces_bro(bins, maximum, minimum, value):
     span = maximum - minimum
-
-    def test(value):
-        return (int(value) - minimum) * (bins - 1) / span
-
-    return test
+    return int((float(value) - minimum) * (bins - 1) // span)
 
 
 class Variable(object):
@@ -93,11 +102,14 @@ class Variable(object):
         return item
 
     def finish(self, data, idx):
-        if len(self.domain) > 10 and all([is_int(x) for x in self.domain]):
-            ints = [int(x) for x in self.domain]
-            self.var_type = binning(10, min(ints), max(ints))
+        space = 5
+        if len(self.domain) > space and all([is_num(x) for x in self.domain]):
+            ints = [float(x) for x in self.domain]
+            # self.var_type = binning(space, min(ints), max(ints))
+            self.var_type = partial(bitchen_spaces_bro, space, min(ints), max(ints))
             for item in data:
                 item[idx] = self.var_type(item[idx])
+            self.domain = set([self.var_type(x) for x in self.domain])
 
     def __repr__(self):
         return str(self.name)

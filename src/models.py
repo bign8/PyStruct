@@ -25,7 +25,8 @@ class Timer(object):
 
 
 def key(U, X):
-    return tuple([frozenset(U), X])
+    return '{}:{}'.format('-'.join(sorted(u.name for u in U)), X.name)
+    # return tuple([frozenset(U), X])
 
 
 class EntityCache(object):

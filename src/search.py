@@ -22,6 +22,7 @@ class BNSearch(DataSet):
         self.base_score = {}
         self.parents = {}
         self.leaves = {}
+        self.vset = set(self.variables)
 
     def search(self, weight=1, debug=False):
         """
@@ -89,7 +90,7 @@ class BNSearch(DataSet):
         )
 
     def calculate_parent_graphs(self, Y, U):
-        for X in set(self.variables).difference(U):
+        for X in self.vset.difference(U):
             union = U.union({X})
             score = self.score.get(Y, union)
             if score is None:
