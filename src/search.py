@@ -68,6 +68,9 @@ class BNSearch(DataSet):
                     for Y in variables.difference(U)
                 )
                 f = g + weight * h
+                if monitor and f > monitor.score:
+                    continue
+
                 # print union, U, f
                 if f < self.base_score.get(union, f + 1):
                     open.put((f, union))

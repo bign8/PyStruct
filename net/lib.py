@@ -4,7 +4,7 @@ from models import Delay
 
 # PORT = 8880
 # MASTER = '192.168.1.20'
-PORT = 9993
+PORT = 9994
 HOST = 'localhost'
 BUFF = 1024  # Size of initial buffer
 

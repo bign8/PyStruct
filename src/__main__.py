@@ -8,12 +8,14 @@ class Monitor(Thread):
     def __init__(self, **kwargs):
         super(Monitor, self).__init__(**kwargs)
         self.complete = False
-        self.score = 1e999
+        self.score = 1e9
         self.kill_me = False
 
     def run(self):
         while not self.kill_me:
-            self.score, self.complete = lib.update(self.name)
+            score, self.complete = lib.update(self.name)
+            if score:
+                self.score = score
             sleep(10)
 
     def stop(self):
