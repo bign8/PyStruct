@@ -68,7 +68,8 @@ class DataSet(object):
             new_data.append(new_item)
         self.data = new_data
         self.variables = sorts
-        print [v.domain for v in self.variables]
+        for variable in self.variables:
+            print '{}: {}'.format(variable.name, repr(variable.domain))
 
 
 def is_num(test):

@@ -1,10 +1,13 @@
 from time import time as now
+from progress import get_terminal_size
 
 
 class Timer(object):
     def __init__(self, name):
-        self._line = '-'.join(['-'] * 10)
-        print '{} Start: {} {}'.format(self._line, name, self._line)
+        _, width = get_terminal_size()
+        width = (width - len(name) - 2) // 2
+        line = ''.join(['-'] * width)
+        print '{0} {1} {0}'.format(line, name)
         self.name = name
         self._start = now()
         self._stop = self._start
@@ -15,7 +18,6 @@ class Timer(object):
 
     def stop(self):
         self._stop = now()
-        print '{} Stop: {} {}'.format(self._line, self.name, self._line)
         return self
 
     def __repr__(self):

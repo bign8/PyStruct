@@ -56,8 +56,6 @@ class ScoreBuilder(object):
                 print 'Found Generated Scores - Loading'
             with open(file_path, 'rb') as f:
                 self.score.cache = pickle.load(f)
-            if debug:
-                print self.score
         else:
             if debug:
                 print 'Generating Score Cache'
