@@ -47,7 +47,7 @@ F2240.986429129165
 sS'Landmass:Zone'
 p16
 F284.0192638015176
-sS'Religion-Zone:Language'
+sS'Language-Zone:Religion'
 p17
 I0
 sS':Name'
@@ -128,9 +128,9 @@ F478.87819504909214
 sS'Religion-Zone:Name'
 p43
 F4818.584492123052
-sS':Religion'
+sS'Name:Language'
 p44
-I0
+F776.0
 sS'Language-Religion:Name'
 p45
 F6600.360789456467
@@ -173,7 +173,7 @@ F2289.571117031463
 sS'Name-Religion-Zone:Landmass'
 p58
 F15520.0
-sS'Language-Zone:Religion'
+sS'Religion-Zone:Language'
 p59
 I0
 sS'Religion:Language'
@@ -194,9 +194,9 @@ F14550.0
 sS'Zone:Name'
 p65
 F1560.00690833017
-sS'Name:Language'
+sS':Religion'
 p66
-F776.0
+I0
 sS'Landmass-Name:Religion'
 p67
 F3880.0

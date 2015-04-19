@@ -4262,9 +4262,9 @@ F1852.2229606434703
 sS'abalone-0-abalone-2-abalone-7:abalone-8'
 p1421
 I0
-sS'abalone-1-abalone-3-abalone-4-abalone-6-abalone-7:abalone-8'
+sS'abalone-3-abalone-4-abalone-6-abalone-7-abalone-8:abalone-1'
 p1422
-I0
+F17220.416536383844
 sS'abalone-0-abalone-3-abalone-4-abalone-7:abalone-1'
 p1423
 F3636.8415665172224
@@ -6557,9 +6557,9 @@ F6852.075106162943
 sS'abalone-3-abalone-4-abalone-6-abalone-7-abalone-8:abalone-2'
 p2186
 F17144.7619336586
-sS'abalone-3-abalone-4-abalone-6-abalone-7-abalone-8:abalone-1'
+sS'abalone-1-abalone-3-abalone-4-abalone-6-abalone-7:abalone-8'
 p2187
-F17220.416536383844
+I0
 sS'abalone-3-abalone-4-abalone-6-abalone-7-abalone-8:abalone-0'
 p2188
 F16077.629613674388
