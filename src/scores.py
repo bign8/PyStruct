@@ -47,29 +47,25 @@ class ScoreBuilder(object):
                 top = self.slices.setdefault(variable, dict())
                 top.setdefault(variable.var_type(item), set()).add(data_idx)
 
-    def __call__(self, name, debug=False):
+    def __call__(self, name):
         file_path = path.abspath(path.join(
             path.dirname(__file__), 'data', name, '{}.score.p'.format(name)
         ))
         if path.isfile(file_path):
-            if debug:
-                print 'Found Generated Scores - Loading'
+            print 'Found Generated Scores - Loading'
             with open(file_path, 'rb') as f:
                 self.score.cache = pickle.load(f)
         else:
-            if debug:
-                print 'Generating Score Cache'
+            print 'Generating Score Cache'
             self.update_scores(set(), self.N)
 
-            if debug:
-                print 'Expanding Nodes'
+            print 'Expanding Nodes'
             self.cap = log(2 * self.N / log(self.N))
             self.progress = Bar()
             self.progress.set_base(self.count_node_expansions(), True)
             self.expand_ad_node(-1, set(), set(range(self.N)))
 
-            if debug:
-                print 'Prune Variables'
+            print 'Prune Variables'
             self.progress.set_base(
                 self.count_prune(set()) * len(self.variables), True
             )
@@ -82,8 +78,7 @@ class ScoreBuilder(object):
                 if value < 0:
                     self.score.cache[key] = 0
 
-            if debug:
-                print 'Storing Generated Scored'
+            print 'Storing Generated Scored'
             with open(file_path, 'wb') as f:
                 pickle.dump(self.score.cache, f)
 

@@ -128,9 +128,9 @@ F478.87819504909214
 sS'Religion-Zone:Name'
 p43
 F4818.584492123052
-sS'Name:Language'
+sS':Religion'
 p44
-F776.0
+I0
 sS'Language-Religion:Name'
 p45
 F6600.360789456467
@@ -194,9 +194,9 @@ F14550.0
 sS'Zone:Name'
 p65
 F1560.00690833017
-sS':Religion'
+sS'Name:Language'
 p66
-I0
+F776.0
 sS'Landmass-Name:Religion'
 p67
 F3880.0

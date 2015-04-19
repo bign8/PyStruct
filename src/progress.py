@@ -13,6 +13,9 @@ class Bar(object):
             print 'Progress cap set at {}'.format(base)
         self.base = base
 
+    def finish(self):
+        self(self.base)
+
     def __call__(self, count):
         percent = count / self.base
         fin = int(percent * self.width)

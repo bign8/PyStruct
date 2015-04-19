@@ -1,10 +1,27 @@
 from net import lib, models
-from search import BNSearch
-from scores import ScoreBuilder
+from threading import Thread
+from time import sleep
+from base import procedure
+
+
+class Monitor(Thread):
+    def __init__(self, **kwargs):
+        super(Monitor, self).__init__(**kwargs)
+        self.complete = False
+        self.score = 1e999
+        self.kill_me = False
+
+    def run(self):
+        while not self.kill_me:
+            self.score, self.complete = lib.update(self.name)
+            sleep(10)
+
+    def stop(self):
+        self.kill_me = True
+        self.join()
 
 
 if __name__ == '__main__':
-    # TODO: add another thread to watch for updated scores
     delay = models.Delay()
     while True:
         try:
@@ -17,10 +34,7 @@ if __name__ == '__main__':
                 delay.reset()
             print 'Search "{}" with weight of {:.6f}'.format(name, weight)
 
-            data = BNSearch(name)
-            data.score = ScoreBuilder(data.data, data.variables)(data.name)
-            score = data.search(weight)
-            graph = data.build_graph()
+            score, graph = procedure(name, weight, Monitor(name=name))
 
             print 'Finish "{}" with score  of {:.4f}'.format(name, score)
             lib.end(name, weight, score, graph)

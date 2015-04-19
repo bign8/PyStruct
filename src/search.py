@@ -1,6 +1,7 @@
 from data import DataSet
 from itertools import chain, combinations
 from models import EntityCache
+from progress import Bar
 from Queue import PriorityQueue
 
 
@@ -24,27 +25,34 @@ class BNSearch(DataSet):
         self.leaves = {}
         self.vset = set(self.variables)
 
-    def search(self, weight=1, debug=False):
+    def search(self, weight=1, monitor=False):
         """
         :type D: :class:`scores.BN`
+        :type monitor: :class:`src.Monitor`
         """
         open = PriorityQueue()
         closed = set()
 
         # Calculate parent graph
+        print 'Calculating Parent Graphs (over estimated progress)'
+        self.progress = Bar()
+        count = self.count_parent_graphs(self.variables[0], set())
+        self.progress.set_base(count * len(self.variables), True)
+        total = 0
         for X in self.variables:
-            self.calculate_parent_graphs(X, set())
+            total = self.calculate_parent_graphs(X, set(), total)
+        self.progress.finish()
 
+        print 'Beginning Search'
         variables = set(self.variables)
         open.put((1, frozenset()))
         counter = 0
-        while not open.empty():
+        while not open.empty() and (not monitor or not monitor.complete):
             counter += 1
             U = open.get()[1]
             if U == frozenset(self.variables):
-                if debug:
-                    print 'Number of expansions:', counter
-                    print 'The best score is', self.base_score.get(U)
+                print 'Number of expansions:', counter
+                print 'The best score is', self.base_score.get(U)
                 return self.base_score.get(U)
             closed.add(frozenset(U))
             for X in variables.difference(U):
@@ -60,8 +68,7 @@ class BNSearch(DataSet):
                     for Y in variables.difference(U)
                 )
                 f = g + weight * h
-                if debug:
-                    print union, U, f
+                # print union, U, f
                 if f < self.base_score.get(union, f + 1):
                     open.put((f, union))
                     self.base_score[union] = f
@@ -89,7 +96,16 @@ class BNSearch(DataSet):
             ], key=lambda x: x[0]
         )
 
-    def calculate_parent_graphs(self, Y, U):
+    def count_parent_graphs(self, Y, U):
+        size = 1
+        for X in self.vset.difference(U):
+            union = U.union({X})
+            size += self.count_parent_graphs(Y, union)
+        return float(size)
+
+    def calculate_parent_graphs(self, Y, U, total):
+        total += 1
+        self.progress(total)
         for X in self.vset.difference(U):
             union = U.union({X})
             score = self.score.get(Y, union)
@@ -100,4 +116,5 @@ class BNSearch(DataSet):
                 self.best_score.set(Y, union, score)
             elif self.best_score.get(Y, union) < joint_union:
                 self.best_score.set(Y, union, score)
-            self.calculate_parent_graphs(Y, union)
+            total = self.calculate_parent_graphs(Y, union, total)
+        return total
