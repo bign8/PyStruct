@@ -69,9 +69,8 @@ class ScoreBuilder(object):
             self.progress.set_base(
                 self.count_prune(set()) * len(self.variables), True
             )
-            count = 0
             for X in self.variables:
-                count = self.prune(X, set(), self.score.get(X, set()), count)
+                self.prune(X, set(), self.score.get(X, set()))
 
             # Fuck if I know
             for key, value in self.score.cache.iteritems():
@@ -94,7 +93,7 @@ class ScoreBuilder(object):
                 size += count * len(variable.domain)
         return float(size)
 
-    def expand_ad_node(self, i, U, D_u, counter=0):
+    def expand_ad_node(self, i, U, D_u):
         """
         :type i: int
         :param U: Node currently being expanded (set of Variables)
@@ -102,13 +101,11 @@ class ScoreBuilder(object):
         :param D_u: Indexes corresponding to the records consistent with U
         :type D_u: set
         """
-        counter += 1
-        self.progress(counter)
+        self.progress.increment()
         for variable in self.variables[i + 1:]:
-            counter = self.expand_vary_node(variable, U, D_u, counter)
-        return counter
+            self.expand_vary_node(variable, U, D_u)
 
-    def expand_vary_node(self, X_i, U, D_u, counter):
+    def expand_vary_node(self, X_i, U, D_u):
         """
         :type X_i: :class:`data.Variable`
         :type U: set
@@ -119,10 +116,7 @@ class ScoreBuilder(object):
             D_idx = self.find_consistent_records(X_i, value, D_u)
             self.update_scores(U_union, len(D_idx))
             if len(U) < self.cap:
-                counter = self.expand_ad_node(
-                    self.variables.index(X_i), U_union, D_idx, counter
-                )
-        return counter
+                self.expand_ad_node(self.variables.index(X_i), U_union, D_idx)
 
     def update_scores(self, U, D_size):
         """
@@ -144,23 +138,21 @@ class ScoreBuilder(object):
            size += self.count_prune(U.union({X}))
         return float(size)
 
-    def prune(self, Y, U, best_score, counter=0):
+    def prune(self, Y, U, best_score):
         """
         :type Y: :class:`.data.Variable`
         :type U: set
         :type best_score: float
         """
-        counter += 1
-        self.progress(counter)
+        self.progress.increment()
         for X in self.vset.difference(U):
             union = U.union({X})
             score = self.score.get(X, union)
             if score < best_score:
-                counter = self.prune(Y, union, score, counter)
+                self.prune(Y, union, score)
             else:
                 self.score.delete(X, union)
-                counter = self.prune(Y, union, best_score, counter)
-        return counter
+                self.prune(Y, union, best_score)
 
     def find_consistent_records(self, X_i, value, D_u):
         """

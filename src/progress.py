@@ -9,17 +9,23 @@ class Bar(object):
         self.width -= 26
         self.base = -1
         self.last = -1
+        self.count = 0
 
     def set_base(self, base, debug=False):
         if debug:
             print 'Progress cap set at {}'.format(base)
         self.base = float(base)
         self.start = time()
+        self.count = 0
 
     def finish(self):
         self(self.base)
 
+    def increment(self, count=1):
+        self(self.count + count)
+
     def __call__(self, count):
+        self.count = count
         percent = count / self.base
         new = int(percent * 10000)
         if new != self.last:

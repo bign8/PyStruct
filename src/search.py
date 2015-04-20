@@ -38,9 +38,8 @@ class BNSearch(DataSet):
         self.progress = Bar()
         count = self.count_parent_graphs(self.variables[0], set())
         self.progress.set_base(count * len(self.variables), True)
-        total = 0
         for X in self.variables:
-            total = self.calculate_parent_graphs(X, set(), total)
+            self.calculate_parent_graphs(X, set())
         self.progress.finish()
 
         print 'Beginning Search'
@@ -106,9 +105,8 @@ class BNSearch(DataSet):
             size += self.count_parent_graphs(Y, union)
         return float(size)
 
-    def calculate_parent_graphs(self, Y, U, total):
-        total += 1
-        self.progress(total)
+    def calculate_parent_graphs(self, Y, U):
+        self.progress.increment()
         for X in self.vset.difference(U):
             union = U.union({X})
             score = self.score.get(Y, union)
@@ -119,5 +117,4 @@ class BNSearch(DataSet):
                 self.best_score.set(Y, union, score)
             elif self.best_score.get(Y, union) < joint_union:
                 self.best_score.set(Y, union, score)
-            total = self.calculate_parent_graphs(Y, union, total)
-        return total
+            self.calculate_parent_graphs(Y, union)
