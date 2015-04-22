@@ -1,7 +1,7 @@
-import SocketServer
 from net import lib
 from sys import argv
 from random import choice
+from SocketServer import TCPServer, BaseRequestHandler
 
 
 class Memory(object):
@@ -15,7 +15,7 @@ class Memory(object):
         return str(self.__dict__)
 
 
-class MyServer(SocketServer.TCPServer):
+class MyServer(TCPServer):
     data = dict()
 
     def save(self):
@@ -23,7 +23,7 @@ class MyServer(SocketServer.TCPServer):
         pass
 
 
-class MyTCPHandler(SocketServer.BaseRequestHandler):
+class MyTCPHandler(BaseRequestHandler):
     def get(self):
         return lib.get(self.request)
 

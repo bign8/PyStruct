@@ -1,4 +1,5 @@
 from net import lib, models
+from sys import argv
 from threading import Thread, Event
 from base import procedure
 
@@ -23,7 +24,7 @@ class Monitor(Thread):
         self.join()
 
 
-if __name__ == '__main__':
+def network():
     delay = models.Delay()
     while True:
         try:
@@ -44,3 +45,10 @@ if __name__ == '__main__':
             pass
         except KeyboardInterrupt:
             break
+
+
+if __name__ == '__main__':
+    if len(argv) > 1:
+        print procedure(argv[1])
+    else:
+        network()
