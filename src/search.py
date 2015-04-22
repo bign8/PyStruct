@@ -1,6 +1,6 @@
 from data import DataSet
 from itertools import chain, combinations
-from models import EntityCache
+from models import EntityCache, key
 from Queue import PriorityQueue
 
 
@@ -21,7 +21,7 @@ class BNSearch(DataSet):
         self.base_score = {}
         self.parents = {}
         self.leaves = {}
-        self.vset = set(self.variables)
+        self._cache = {}
 
     def search(self, weight=1, monitor=False):
         """
@@ -79,13 +79,20 @@ class BNSearch(DataSet):
         return graph
 
     def joint_best_score(self, Y, U):
+        index = key(U, Y)
+        if index in self._cache:
+            return self._cache[index]
+
         diff = U.difference({Y})
         # TODO: ensure this logic is correct
         if len(U) < 2:
-            return self.score.get(Y, diff), diff
-        return min(
-            [
-                (self.score.get(Y, parents), parents)
-                for parents in powerset_generator(diff)
-            ], key=lambda x: x[0]
-        )
+            value = self.score.get(Y, diff), diff
+        else:
+            value = min(
+                [
+                    (self.score.get(Y, parents), parents)
+                    for parents in powerset_generator(diff)
+                ], key=lambda x: x[0]
+            )
+        self._cache[index] = value
+        return value

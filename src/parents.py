@@ -8,6 +8,7 @@ class ParentBuilder(object):
         self.data = data
         self.progress = Bar()
         self.best_score = EntityCache()
+        self.vset = set(self.data.variables)
 
     def __call__(self):
         # TODO: cache parent graphs
@@ -19,14 +20,14 @@ class ParentBuilder(object):
 
     def count_parent_graphs(self, Y, U):
         size = 1
-        for X in self.data.vset.difference(U):
+        for X in self.vset.difference(U):
             union = U.union({X})
             size += self.count_parent_graphs(Y, union)
         return float(size)
 
     def calculate_parent_graphs(self, Y, U):
         self.progress.increment()
-        for X in self.data.vset.difference(U):
+        for X in self.vset.difference(U):
             union = U.union({X})
             score = self.data.score.get(Y, union)
             if score is None:
