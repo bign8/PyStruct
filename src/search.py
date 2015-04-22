@@ -28,24 +28,24 @@ class BNSearch(DataSet):
         :type D: :class:`scores.BN`
         :type monitor: :class:`src.Monitor`
         """
-        open = PriorityQueue()
-        closed = set()
+        open_set = PriorityQueue()
+        closed_set = set()
 
         print 'Beginning Search'
         variables = set(self.variables)
-        open.put((1, frozenset()))
+        open_set.put((1, frozenset()))
         counter = 0
-        while not open.empty() and not monitor.complete:
+        while not open_set.empty() and not monitor.complete:
             counter += 1
-            U = open.get()[1]
+            U = open_set.get()[1]
             if U == frozenset(self.variables):
                 print 'Number of expansions:', counter
                 print 'The best score is', self.base_score.get(U)
                 return self.base_score.get(U)
-            closed.add(frozenset(U))
+            closed_set.add(frozenset(U))
             for X in variables.difference(U):
                 union = frozenset(U.union({X}))
-                if union in closed:
+                if union in closed_set:
                     continue
                 # Score so far
                 g, parents = self.joint_best_score(X, U)
@@ -61,7 +61,7 @@ class BNSearch(DataSet):
 
                 # print union, U, f
                 if f < self.base_score.get(union, f + 1):
-                    open.put((f, union))
+                    open_set.put((f, union))
                     self.base_score[union] = f
                     self.parents[union] = parents
                     self.leaves[union] = X

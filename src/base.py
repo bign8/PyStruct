@@ -37,7 +37,7 @@ def procedure(name, weight=1, monitor=None):
     if killed:
         return
 
-    timer = Timer('REBUILD graph (sorry Bruce Wayne)')
+    timer = Timer('Rebuild graph')
     graph = data.build_graph()
     print timer.stop()
 
