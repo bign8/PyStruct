@@ -1,12 +1,17 @@
 import pickle
 import socket
 from models import Delay
+from os import environ
 
-# PORT = 8880
-# MASTER = '192.168.1.20'
-PORT = 9993
-HOST = 'localhost'
+
 BUFF = 1024  # Size of initial buffer
+PORT = 8880
+HOST = '192.168.1.20'
+
+# Development environment!
+if environ.get('DEV'):
+    PORT = 9993
+    HOST = 'localhost'
 
 
 def _init():
@@ -90,14 +95,15 @@ def update(name):
     """
     Check the status of the search cluster
     :type name: str
-    :return: score, complete
+    :return: score, complete, best_weight
+    :rtype: float, bool, float
     """
     _wait()
     sock = _init()
     try:
         sock.send('G')
         send(sock, name)
-        score, complete = get(sock)
+        result = get(sock)
     finally:
         sock.close()
-    return score, complete
+    return result

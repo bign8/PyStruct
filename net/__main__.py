@@ -1,6 +1,5 @@
 from net import lib
 from sys import argv
-from random import choice
 from SocketServer import TCPServer, BaseRequestHandler
 
 
@@ -37,7 +36,7 @@ class MyTCPHandler(BaseRequestHandler):
             weights = [1.2, 1.1, 1.08, 1.04, 1]
             try:
                 memory = self.server.data.setdefault(name, Memory())
-                weight = choice([
+                weight = max([
                     w for w in weights
                     if not memory.weight or memory.weight > w
                 ])
@@ -66,7 +65,7 @@ class MyTCPHandler(BaseRequestHandler):
 
     def handle_get(self):
         data = self.server.data.setdefault(self.get(), Memory())
-        self.send((data.score, data.complete))
+        self.send((data.score, data.complete, data.weight))
 
     def handle_ping(self):
         self.send('PONG')

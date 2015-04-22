@@ -1,6 +1,7 @@
 from data import DataSet
 from itertools import chain, combinations
 from models import EntityCache
+from monitor import Monitor
 from progress import Bar
 from Queue import PriorityQueue
 
@@ -30,6 +31,9 @@ class BNSearch(DataSet):
         :type D: :class:`scores.BN`
         :type monitor: :class:`src.Monitor`
         """
+        if not monitor:
+            monitor = Monitor()
+
         open = PriorityQueue()
         closed = set()
 
@@ -46,7 +50,7 @@ class BNSearch(DataSet):
         variables = set(self.variables)
         open.put((1, frozenset()))
         counter = 0
-        while not open.empty() and (not monitor or not monitor.complete):
+        while not open.empty() and not monitor.complete:
             counter += 1
             U = open.get()[1]
             if U == frozenset(self.variables):
@@ -67,7 +71,7 @@ class BNSearch(DataSet):
                     for Y in variables.difference(U)
                 )
                 f = g + weight * h
-                if monitor and f > monitor.score:
+                if f > monitor.score:
                     continue
 
                 # print union, U, f
@@ -76,7 +80,9 @@ class BNSearch(DataSet):
                     self.base_score[union] = f
                     self.parents[union] = parents
                     self.leaves[union] = X
-        raise Exception('Search Cannot Find Goal')
+
+        if not monitor.complete:
+            raise Exception('Search Cannot Find Goal')
 
     def build_graph(self):
         goal, graph = frozenset(self.variables), {}

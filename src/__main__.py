@@ -1,27 +1,7 @@
 from net import lib, models
 from sys import argv
-from threading import Thread, Event
 from base import procedure
-
-
-class Monitor(Thread):
-    def __init__(self, **kwargs):
-        super(Monitor, self).__init__(**kwargs)
-        self.complete = False
-        self.score = 1e9
-        self.event = Event()
-
-    def run(self):
-        while not self.event.is_set():
-            score, self.complete = lib.update(self.name)
-            if score:
-                self.score = score
-            self.event.wait(10)
-
-    def stop(self):
-        print 'Killing monitor'
-        self.event.set()
-        self.join()
+from monitor import Monitor
 
 
 def network():
