@@ -1,8 +1,6 @@
 from data import DataSet
 from itertools import chain, combinations
 from models import EntityCache
-from monitor import Monitor
-from progress import Bar
 from Queue import PriorityQueue
 
 
@@ -20,7 +18,6 @@ class BNSearch(DataSet):
     def __init__(self, name):
         super(BNSearch, self).__init__(name)
         self.score = EntityCache()
-        self.best_score = EntityCache()
         self.base_score = {}
         self.parents = {}
         self.leaves = {}
@@ -31,20 +28,8 @@ class BNSearch(DataSet):
         :type D: :class:`scores.BN`
         :type monitor: :class:`src.Monitor`
         """
-        if not monitor:
-            monitor = Monitor()
-
         open = PriorityQueue()
         closed = set()
-
-        # Calculate parent graph
-        print 'Calculating Parent Graphs (over estimated progress)'
-        self.progress = Bar()
-        count = self.count_parent_graphs(self.variables[0], set())
-        self.progress.set_base(count * len(self.variables), True)
-        for X in self.variables:
-            self.calculate_parent_graphs(X, set())
-        self.progress.finish()
 
         print 'Beginning Search'
         variables = set(self.variables)
@@ -83,6 +68,7 @@ class BNSearch(DataSet):
 
         if not monitor.complete:
             raise Exception('Search Cannot Find Goal')
+        raise NotImplementedError('KILLED THIS BITCH')
 
     def build_graph(self):
         goal, graph = frozenset(self.variables), {}
@@ -103,24 +89,3 @@ class BNSearch(DataSet):
                 for parents in powerset_generator(diff)
             ], key=lambda x: x[0]
         )
-
-    def count_parent_graphs(self, Y, U):
-        size = 1
-        for X in self.vset.difference(U):
-            union = U.union({X})
-            size += self.count_parent_graphs(Y, union)
-        return float(size)
-
-    def calculate_parent_graphs(self, Y, U):
-        self.progress.increment()
-        for X in self.vset.difference(U):
-            union = U.union({X})
-            score = self.score.get(Y, union)
-            if score is None:
-                continue
-            joint_union = self.joint_best_score(Y, union)[0]
-            if score < self.joint_best_score(Y, U)[0] and score < joint_union:
-                self.best_score.set(Y, union, score)
-            elif self.best_score.get(Y, union) < joint_union:
-                self.best_score.set(Y, union, score)
-            self.calculate_parent_graphs(Y, union)

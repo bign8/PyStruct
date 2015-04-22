@@ -40,7 +40,7 @@ class MyTCPHandler(BaseRequestHandler):
                     w for w in weights
                     if not memory.weight or memory.weight > w
                 ])
-            except IndexError:
+            except Exception:
                 name = None
         self.send((name, weight))
 

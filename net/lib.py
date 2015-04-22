@@ -10,7 +10,7 @@ HOST = '192.168.1.20'
 
 # Development environment!
 if environ.get('DEV'):
-    PORT = 9993
+    PORT = 9994
     HOST = 'localhost'
 
 

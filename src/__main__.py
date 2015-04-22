@@ -2,6 +2,23 @@ from net import lib, models
 from sys import argv
 from base import procedure
 from monitor import Monitor
+from multiprocessing import cpu_count
+from threading import Thread
+
+
+class Process(Thread):
+    def __init__(self, name, weight, monitor):
+        super(Process, self).__init__()
+        self.monitor = monitor
+        self.name = name
+        self.weight = weight
+        self.score = None
+
+    def run(self):
+        score, graph = procedure(self.name, self.weight, self.monitor)
+        if score:
+            self.score = score
+            lib.end(self.name, self.weight, score, graph)
 
 
 def network():
@@ -15,12 +32,39 @@ def network():
                 continue
             else:
                 delay.reset()
-            print 'Search "{}" with weight of {:.6f}'.format(name, weight)
+            print 'Search "{}" with max weight of {:.6f}'.format(name, weight)
 
-            score, graph = procedure(name, weight, Monitor(name=name))
+            # Fire up process threads with shared access to monitor
+            monitor = Monitor()
+            monitor.start()
+            threads = []
+            thread_count, base = cpu_count(), 1
+            span = (weight - 1) / float(thread_count)
+            for _ in xrange(thread_count):
+                thread = Process(name, base, monitor)
+                base += span
+                thread.start()
+                threads.append(thread)
 
-            print 'Finish "{}" with score  of {:.4f}'.format(name, score)
-            lib.end(name, weight, score, graph)
+            # Use a round-robbin queue to ask the threads to join
+            score = None
+            counter = 0
+            while threads:
+                thread = threads[counter]
+                thread.join(10)
+                if not thread.is_alive():
+                    threads.remove(thread)
+                    if thread.score:
+                        score = min(thread.score, score) if score else thread.score
+                counter += 1
+                if len(threads):
+                    counter %= len(threads)
+            monitor.stop()
+
+            if score:
+                print 'Finish "{}" with score  of {:.4f}'.format(name, score)
+            else:
+                print 'Other machine finished first, all cores dead'
         except lib.socket.error:
             pass
         except KeyboardInterrupt:

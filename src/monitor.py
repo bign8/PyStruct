@@ -3,8 +3,8 @@ from threading import Thread, Event
 
 
 class Monitor(Thread):
-    def __init__(self, **kwargs):
-        super(Monitor, self).__init__(**kwargs)
+    def __init__(self):
+        super(Monitor, self).__init__()
         self.complete = False
         self.score = 1e9
         self.best = 2
