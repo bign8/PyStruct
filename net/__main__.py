@@ -1,14 +1,16 @@
 from net import lib
 from sys import argv
+from time import time
+from json import dumps
 from SocketServer import TCPServer, BaseRequestHandler
 
 
 class Memory(object):
     score = None
     graph = None
-    name = None
     weight = None
     complete = False
+    start = None
 
     def __repr__(self):
         return str(self.__dict__)
@@ -16,10 +18,16 @@ class Memory(object):
 
 class MyServer(TCPServer):
     data = dict()
+    processing = 1
 
     def save(self):
         # TODO: store data to disk
-        pass
+        print dumps(
+            {
+                key: value.__dict__
+                for key, value in self.data.iteritems()
+            }, indent=4
+        )
 
 
 class MyTCPHandler(BaseRequestHandler):
@@ -30,16 +38,25 @@ class MyTCPHandler(BaseRequestHandler):
         lib.send(self.request, msg)
 
     def handle_start(self):
-        name = argv[1] if len(argv) > 1 else None
+        name = None
+        if len(argv) > self.server.processing:
+            name = argv[self.server.processing]
         weight = 0
         if name:
             weights = [1.2, 1.1, 1.08, 1.04, 1]
             try:
                 memory = self.server.data.setdefault(name, Memory())
+                if memory.complete:
+                    # If we are done, move on
+                    self.server.processing += 1
+                    return self.handle_start()
+
                 weight = max([
                     w for w in weights
                     if not memory.weight or memory.weight > w
                 ])
+                if not memory.start:
+                    memory.start = time()
             except Exception:
                 name = None
         self.send((name, weight))
@@ -54,11 +71,12 @@ class MyTCPHandler(BaseRequestHandler):
             data.score = score
             data.graph = graph
             data.weight = weight
-            data.name = name
             print 'New best score of {} for {}'.format(score, name)
             if weight <= 1:
                 print 'Completed Search on {}'.format(name)
                 data.complete = True
+                data.duration = time() - data.start
+                del data.start
             self.server.save()
         else:
             print 'Worse score of {} for {}'.format(score, name)
@@ -78,7 +96,10 @@ class MyTCPHandler(BaseRequestHandler):
             'P': self.handle_ping
         }
         command = self.request.recv(1)
-        print 'Client {1}:{2} said "{0}"'.format(command, *self.client_address)
+        if command != 'P':
+            print 'Client {1}:{2} said "{0}"'.format(
+                command, *self.client_address
+            )
         if command in obj:
             obj.get(command, lambda: 0)()
         else:
@@ -87,4 +108,9 @@ class MyTCPHandler(BaseRequestHandler):
 if __name__ == "__main__":
     server = MyServer((lib.HOST, lib.PORT), MyTCPHandler)
     print 'Serving at {}:{}'.format(*server.server_address)
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print 'Killing server'
+        server.server_close()
+        server.shutdown()

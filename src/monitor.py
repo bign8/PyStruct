@@ -3,8 +3,9 @@ from threading import Thread, Event
 
 
 class Monitor(Thread):
-    def __init__(self):
+    def __init__(self, name):
         super(Monitor, self).__init__()
+        self.name = name
         self.complete = False
         self.score = 1e9
         self.best = 2
@@ -20,6 +21,6 @@ class Monitor(Thread):
             self.event.wait(10)
 
     def stop(self):
-        print 'Killing monitor'
+        # print 'Killing monitor'
         self.event.set()
         self.join()

@@ -52,7 +52,7 @@ class ScoreBuilder(object):
             path.dirname(__file__), 'data', name, '{}.score.p'.format(name)
         ))
         if path.isfile(file_path):
-            print 'Found Generated Scores - Loading'
+            # print 'Found Generated Scores - Loading'
             with open(file_path, 'rb') as f:
                 self.score.cache = pickle.load(f)
         else:

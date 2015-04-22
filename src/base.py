@@ -5,23 +5,26 @@ from monitor import Monitor
 # from parents import ParentBuilder
 
 
-def procedure(name, weight=1, monitor=None):
-    timer = Timer('Fetching Variables')
+def procedure(name, weight=1, monitor=None, debug=True):
+    if debug:
+        timer = Timer('Fetching Variables')
     data = BNSearch(name)
-    print timer.stop()
-
-    timer = Timer('Calculate Scores')
+    if debug:
+        print timer.stop()
+        timer = Timer('Calculate Scores')
     data.score = ScoreBuilder(data.data, data.variables)(data.name)
-    print timer.stop()
+    if debug:
+        print timer.stop()
 
     # timer = Timer('Build Parent Graphs')
     # data.best_score = ParentBuilder(data)()
     # print timer.stop()
 
     if not monitor:
-        monitor = Monitor()
+        monitor = Monitor(name)
 
-    timer = Timer('Search')
+    if debug:
+        timer = Timer('Search')
     killed = False
     score = 1e99
     try:
@@ -32,13 +35,11 @@ def procedure(name, weight=1, monitor=None):
         )
         killed = True
     finally:
-        print timer.stop()
+        if debug:
+            print timer.stop()
 
     if killed:
         return
 
-    timer = Timer('Rebuild graph')
     graph = data.build_graph()
-    print timer.stop()
-
     return score, graph

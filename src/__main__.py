@@ -15,14 +15,16 @@ class Process(Thread):
         self.score = None
 
     def run(self):
-        score, graph = procedure(self.name, self.weight, self.monitor)
+        score, graph = procedure(
+            self.name, self.weight, self.monitor, debug=False
+        )
         if score:
             self.score = score
             lib.end(self.name, self.weight, score, graph)
 
 
 def network():
-    delay = models.Delay()
+    delay = models.Delay(cap=5)
     while True:
         try:
             name, weight = lib.start()
@@ -35,7 +37,7 @@ def network():
             print 'Search "{}" with max weight of {:.6f}'.format(name, weight)
 
             # Fire up process threads with shared access to monitor
-            monitor = Monitor()
+            monitor = Monitor(name)
             monitor.start()
             threads = []
             thread_count, base = cpu_count(), 1

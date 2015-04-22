@@ -31,7 +31,7 @@ class BNSearch(DataSet):
         open_set = PriorityQueue()
         closed_set = set()
 
-        print 'Beginning Search'
+        # print 'Beginning Search'
         variables = set(self.variables)
         open_set.put((1, frozenset()))
         counter = 0
@@ -39,8 +39,8 @@ class BNSearch(DataSet):
             counter += 1
             U = open_set.get()[1]
             if U == frozenset(self.variables):
-                print 'Number of expansions:', counter
-                print 'The best score is', self.base_score.get(U)
+                # print 'Number of expansions:', counter
+                # print 'The best score is', self.base_score.get(U)
                 return self.base_score.get(U)
             closed_set.add(frozenset(U))
             for X in variables.difference(U):
