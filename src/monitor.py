@@ -21,6 +21,5 @@ class Monitor(Thread):
             self.event.wait(10)
 
     def stop(self):
-        # print 'Killing monitor'
         self.event.set()
         self.join()

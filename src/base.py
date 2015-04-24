@@ -6,6 +6,7 @@ from monitor import Monitor
 
 
 def procedure(name, weight=1, monitor=None, debug=True):
+    timer = None
     if debug:
         timer = Timer('Fetching Variables')
     data = BNSearch(name)

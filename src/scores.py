@@ -4,6 +4,7 @@ from math import log
 from models import EntityCache
 from functools import partial
 from progress import Bar
+from time import time
 
 
 prod = lambda items: reduce(lambda x, y: x * y, items, 1)
@@ -56,6 +57,7 @@ class ScoreBuilder(object):
             with open(file_path, 'rb') as f:
                 self.score.cache = pickle.load(f)
         else:
+            start = time()
             print 'Generating Score Cache'
             self.update_scores(set(), self.N)
 
@@ -76,10 +78,16 @@ class ScoreBuilder(object):
             for key, value in self.score.cache.iteritems():
                 if value < 0:
                     self.score.cache[key] = 0
+            stop = time()
 
             print 'Storing Generated Scored'
             with open(file_path, 'wb') as f:
                 pickle.dump(self.score.cache, f)
+            log_path = path.abspath(path.join(
+                path.dirname(__file__), 'data', name, 'time.txt'
+            ))
+            with open(log_path, 'w') as f:
+                f.write('{}s\n'.format(stop - start))
 
         return self.score
 
