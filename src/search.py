@@ -79,19 +79,21 @@ class BNSearch(DataSet):
         return graph
 
     def joint_best_score(self, Y, U):
-        index = key(U, Y)
+        index = tuple([Y, frozenset(U)])
         if index in self._cache:
             return self._cache[index]
 
         diff = U.difference({Y})
         # TODO: ensure this logic is correct
         if len(U) < 2:
-            value = self.score.get(Y, diff), diff
+            value = self.score.get(Y, diff, 1e99), diff
         else:
+            # print list(powerset_generator(diff))
             value = min(
                 [
-                    (self.score.get(Y, parents), parents)
+                    (self.score.get(Y, parents, 1e99), parents)
                     for parents in powerset_generator(diff)
+                    # if self.score.contains(Y, parents)
                 ], key=lambda x: x[0]
             )
         self._cache[index] = value

@@ -33,7 +33,7 @@ class ScoreBuilder(object):
         self.N = len(data)
         self.score = EntityCache()
         self.variables = variables
-        self.vset = set(variables)
+        self.vset = frozenset(variables)
 
         # Pre-build slices
         self.slices = dict()
@@ -132,11 +132,19 @@ class ScoreBuilder(object):
             key = U.difference({X})
             self.score.update(X, key, -delta, partial(K, X, key))
 
+    _cache = set()
+
     def count_prune(self, U):
+        U = frozenset(U)
+        if U in self._cache:
+            return 1.0
         size = 1
         for X in self.vset.difference(U):
-           size += self.count_prune(U.union({X}))
+            size += self.count_prune(U.union({X}))
+        self._cache.add(U)
         return float(size)
+
+    _cache2 = set()
 
     def prune(self, Y, U, best_score):
         """
@@ -145,6 +153,9 @@ class ScoreBuilder(object):
         :type best_score: float
         """
         self.progress.increment()
+        key = tuple([Y, frozenset(U)])
+        if key in self._cache2:
+            return
         for X in self.vset.difference(U):
             union = U.union({X})
             score = self.score.get(X, union)
@@ -153,6 +164,7 @@ class ScoreBuilder(object):
             else:
                 self.score.delete(X, union)
                 self.prune(Y, union, best_score)
+        self._cache2.add(key)
 
     def find_consistent_records(self, X_i, value, D_u):
         """

@@ -26,8 +26,16 @@ class Timer(object):
         )
 
 
+cache = {}
+
+
 def key(U, X):
-    return '{}:{}'.format('-'.join(sorted(u.name for u in U)), X.name)
+    fob = tuple([X, frozenset(U)])
+    if fob in cache:
+        return cache[fob]
+    value = '{}:{}'.format('-'.join(sorted(u.name for u in U)), X.name)
+    cache[fob] = value
+    return value
     # return tuple([frozenset(U), X])
 
 
@@ -77,6 +85,9 @@ class EntityCache(object):
         if fob not in self.cache:
             self.cache[fob] = default()
         self.cache[fob] += delta
+
+    def contains(self, X, U):
+        return key(U, X) in self.cache
 
     def __repr__(self):
         return str(self.__dict__)
