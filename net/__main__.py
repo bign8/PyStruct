@@ -1,7 +1,8 @@
+import json
 from net import lib
 from sys import argv
 from time import time
-from json import dumps
+from os.path import isfile
 from SocketServer import TCPServer, BaseRequestHandler
 
 
@@ -12,22 +13,38 @@ class Memory(object):
     complete = False
     start = None
 
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
     def __repr__(self):
         return str(self.__dict__)
+
+
+STORE = 'data.json'
 
 
 class MyServer(TCPServer):
     data = dict()
     processing = 1
 
+    def __init__(self, *args, **kwargs):
+        TCPServer.__init__(self, *args, **kwargs)
+        if isfile(STORE):
+            print 'Found previous run on disk. Loading + Restoring...'
+            with open(STORE, 'r') as data:
+                memories = json.load(data)
+                for key, value in memories.iteritems():
+                    memories[key] = Memory(**value)
+                self.data = memories
+
     def save(self):
-        # TODO: store data to disk
-        print dumps(
-            {
-                key: value.__dict__
-                for key, value in self.data.iteritems()
-            }, indent=4
-        )
+        data = {
+            key: value.__dict__
+            for key, value in self.data.iteritems()
+        }
+        print json.dumps(data, indent=4)
+        with open(STORE, 'w') as file:
+            json.dump(data, file, indent=4)
 
 
 class MyTCPHandler(BaseRequestHandler):
