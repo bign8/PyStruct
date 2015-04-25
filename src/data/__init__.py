@@ -39,7 +39,8 @@ class DataSet(object):
         file_path = path.join(base_path, name, "{}.data".format(name))
         with open(path.abspath(file_path), 'rb') as handle:
             for line in handle:
-                data, item = line.split(','), []
+                delimiter = ',' if ',' in line else ' '
+                data, item = line.split(delimiter), []
 
                 # Generate variables if they aren't preset
                 if not self.variables:
