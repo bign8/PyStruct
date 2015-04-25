@@ -1,0 +1,3 @@
+Time: 46.8099031448s
+Expansions: 657912
+Prunes: 3686415

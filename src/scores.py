@@ -7,6 +7,9 @@ from progress import Bar
 from time import time
 
 
+PRUNE_CAP = 5e7
+
+
 prod = lambda items: reduce(lambda x, y: x * y, items, 1)
 
 """
@@ -68,11 +71,17 @@ class ScoreBuilder(object):
             self.progress.set_base(expansion_count, True)
             self.expand_ad_node(-1, set(), set(range(self.N)))
 
-            print 'Prune Variables'
-            prune_count = self.count_prune(set()) * len(self.variables)
-            self.progress.set_base(prune_count, True)
-            for X in self.variables:
-                self.prune(X, set(), self.score.get(X, set()))
+            print 'Prune Variables (Safe to kill)'
+            try:
+                prune_count = self.count_prune(set()) * len(self.variables)
+                if prune_count < PRUNE_CAP:
+                    self.progress.set_base(prune_count, True)
+                    for X in self.variables:
+                        self.prune(X, set(), self.score.get(X, set()))
+                else:
+                    print 'Skipping prune because >5e7 calls'
+            except KeyboardInterrupt:
+                print 'Killed pruning count due to keyboard interrupt'
 
             # clear negative scores
             for key, value in self.score.cache.iteritems():
@@ -101,6 +110,8 @@ class ScoreBuilder(object):
                     self.variables.index(variable), depth + 1
                 )
                 size += count * len(variable.domain)
+            if size > PRUNE_CAP:
+                return size
         return size
 
     def expand_ad_node(self, i, U, D_u):
