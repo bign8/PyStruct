@@ -1,3 +1,4 @@
+import gzip
 import pickle
 from os import path
 from math import log
@@ -53,11 +54,11 @@ class ScoreBuilder(object):
 
     def __call__(self, name):
         file_path = path.abspath(path.join(
-            path.dirname(__file__), 'data', name, '{}.score.p'.format(name)
+            path.dirname(__file__), 'data', name, 'score.pklz'
         ))
         if path.isfile(file_path):
             # print 'Found Generated Scores - Loading'
-            with open(file_path, 'rb') as f:
+            with gzip.open(file_path, 'rb') as f:
                 self.score.cache = pickle.load(f)
         else:
             start = time()
@@ -72,6 +73,7 @@ class ScoreBuilder(object):
             self.expand_ad_node(-1, set(), set(range(self.N)))
 
             print 'Prune Variables (Safe to kill)'
+            prune_count = 'killed'
             try:
                 prune_count = self.count_prune(set()) * len(self.variables)
                 if prune_count < PRUNE_CAP:
@@ -90,7 +92,7 @@ class ScoreBuilder(object):
             stop = time()
 
             print 'Storing Generated Scored'
-            with open(file_path, 'wb') as f:
+            with gzip.open(file_path, 'wb') as f:
                 pickle.dump(self.score.cache, f)
             log_path = path.abspath(path.join(
                 path.dirname(__file__), 'data', name, 'info.txt'
