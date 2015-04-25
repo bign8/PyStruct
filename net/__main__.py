@@ -47,6 +47,13 @@ class MyServer(TCPServer):
             json.dump(data, bitch, indent=4)
 
 
+percent, base = .2, 1
+weights, delta = [], percent / 12.0
+for x in xrange(12):
+    weights.append(base)
+    base += delta  # number of machines
+
+
 class MyTCPHandler(BaseRequestHandler):
     def get(self):
         return lib.get(self.request)
@@ -54,13 +61,22 @@ class MyTCPHandler(BaseRequestHandler):
     def send(self, msg):
         lib.send(self.request, msg)
 
+    def get_weight_span(self):
+        addr = self.client_address[0]
+        index = int(addr[addr.rfind('.') + 1:])
+        # Cluster config (lowest score = 50)
+        if index > 20:
+            index -= 50
+            return weights[index], weights[index] + delta
+        return 1, 1.2
+
     def handle_start(self):
         name = None
+
         if len(argv) > self.server.processing:
             name = argv[self.server.processing]
-        weight = 0
+        bot, top = 1, 1.2
         if name:
-            weights = [1.2, 1.1, 1.08, 1.04, 1]
             try:
                 memory = self.server.data.setdefault(name, Memory())
                 if memory.complete:
@@ -68,15 +84,12 @@ class MyTCPHandler(BaseRequestHandler):
                     self.server.processing += 1
                     return self.handle_start()
 
-                weight = max([
-                    w for w in weights
-                    if not memory.weight or memory.weight > w
-                ])
+                bot, top = self.get_weight_span()
                 if not memory.start:
                     memory.start = time()
             except Exception:
                 name = None
-        self.send((name, weight))
+        self.send((name, bot, top))
 
     def handle_end(self):
         name, weight, score, graph = self.get()

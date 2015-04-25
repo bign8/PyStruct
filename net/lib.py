@@ -61,7 +61,7 @@ def start():
     """
     Call to retrieve search from server
     :return: Dataset Name, Weight to use
-    :rtype: str, float
+    :rtype: str, float, float
     """
     _wait()
     sock = _init()
