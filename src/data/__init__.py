@@ -62,7 +62,7 @@ class DataSet(object):
         [v.finish(self.data, idx) for idx, v in enumerate(self.variables)]
         kill_idxs = list(reversed(sorted([
             idx for idx, variable in enumerate(self.variables)
-            if len(variable.domain) > DOMAIN_CAP
+            if len(variable.domain) > DOMAIN_CAP or len(variable.domain) < 2
         ])))
         print 'Killed variables', kill_idxs
         for idx in kill_idxs:
