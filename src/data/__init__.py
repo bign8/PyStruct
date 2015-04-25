@@ -2,6 +2,9 @@ from os import path
 from functools import partial
 
 
+DOMAIN_CAP = 5
+
+
 class DataSet(object):
     """
     A dataset (D) is a set of records (D_1 ... D_N), each of which is an
@@ -53,23 +56,32 @@ class DataSet(object):
                     item.append(variable.process(value))
                 self.data.append(item)
 
-        # Prune null variables
+        # Prune null variables (limit domains + delete if necessary)
         self.variables = [v for v in self.variables if v]
         [v.finish(self.data, idx) for idx, v in enumerate(self.variables)]
+        kill_idxs = list(reversed(sorted([
+            idx for idx, variable in enumerate(self.variables)
+            if len(variable.domain) > DOMAIN_CAP
+        ])))
+        print 'Killed variables', kill_idxs
+        for idx in kill_idxs:
+            del self.variables[idx]
         self.variable_map = {v.name: v for v in self.variables}
 
         # Order variables and data by domain size
         sorts = sorted(self.variables, key=lambda x: len(x.domain))[::-1]
         new_data = []
         for item in self.data:
+            for idx in kill_idxs:
+                del item[idx]
             new_item = [None] * len(item)
             for idx, variable in enumerate(self.variables):
                 new_item[sorts.index(variable)] = item[idx]
             new_data.append(new_item)
         self.data = new_data
         self.variables = sorts
-        # for variable in self.variables:
-        #     print '{}: {}'.format(variable.name, repr(variable.domain))
+        for variable in self.variables:
+            print '{}: {}'.format(variable.name, repr(variable.domain))
 
 
 def is_num(test):
@@ -106,11 +118,9 @@ class Variable(object):
         return item
 
     def finish(self, data, idx):
-        space = 5
-        if len(self.domain) > space and all([is_num(x) for x in self.domain]):
+        if len(self.domain) > DOMAIN_CAP and all([is_num(x) for x in self.domain]):
             ints = [float(x) for x in self.domain]
-            # self.var_type = binning(space, min(ints), max(ints))
-            self.var_type = partial(bitchen_spaces_bro, space, min(ints), max(ints))
+            self.var_type = partial(bitchen_spaces_bro, DOMAIN_CAP, min(ints), max(ints))
             for item in data:
                 item[idx] = self.var_type(item[idx])
             self.domain = set([self.var_type(x) for x in self.domain])

@@ -64,17 +64,17 @@ class ScoreBuilder(object):
             print 'Expanding Nodes'
             self.cap = log(2 * self.N / log(self.N))
             self.progress = Bar()
-            self.progress.set_base(self.count_node_expansions(), True)
+            expansion_count = self.count_node_expansions()
+            self.progress.set_base(expansion_count, True)
             self.expand_ad_node(-1, set(), set(range(self.N)))
 
             print 'Prune Variables'
-            self.progress.set_base(
-                self.count_prune(set()) * len(self.variables), True
-            )
+            prune_count = self.count_prune(set()) * len(self.variables)
+            self.progress.set_base(prune_count, True)
             for X in self.variables:
                 self.prune(X, set(), self.score.get(X, set()))
 
-            # Fuck if I know
+            # clear negative scores
             for key, value in self.score.cache.iteritems():
                 if value < 0:
                     self.score.cache[key] = 0
@@ -84,10 +84,12 @@ class ScoreBuilder(object):
             with open(file_path, 'wb') as f:
                 pickle.dump(self.score.cache, f)
             log_path = path.abspath(path.join(
-                path.dirname(__file__), 'data', name, 'time.txt'
+                path.dirname(__file__), 'data', name, 'info.txt'
             ))
             with open(log_path, 'w') as f:
-                f.write('{}s\n'.format(stop - start))
+                f.write('Time: {}s\nExpansions: {}\nPrunes: {}'.format(
+                    stop - start, expansion_count, prune_count
+                ))
 
         return self.score
 
@@ -99,7 +101,7 @@ class ScoreBuilder(object):
                     self.variables.index(variable), depth + 1
                 )
                 size += count * len(variable.domain)
-        return float(size)
+        return size
 
     def expand_ad_node(self, i, U, D_u):
         """
@@ -145,12 +147,12 @@ class ScoreBuilder(object):
     def count_prune(self, U):
         U = frozenset(U)
         if U in self._cache:
-            return 1.0
+            return 1
         size = 1
         for X in self.vset.difference(U):
             size += self.count_prune(U.union({X}))
         self._cache.add(U)
-        return float(size)
+        return size
 
     _cache2 = set()
 

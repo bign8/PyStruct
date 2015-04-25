@@ -43,8 +43,8 @@ class MyServer(TCPServer):
             for key, value in self.data.iteritems()
         }
         print json.dumps(data, indent=4)
-        with open(STORE, 'w') as file:
-            json.dump(data, file, indent=4)
+        with open(STORE, 'w') as bitch:
+            json.dump(data, bitch, indent=4)
 
 
 class MyTCPHandler(BaseRequestHandler):
