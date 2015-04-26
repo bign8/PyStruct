@@ -138,6 +138,9 @@ class MyTCPHandler(BaseRequestHandler):
             print 'Client {1}:{2} said "{0}"'.format(
                 command, *self.client_address
             )
+            if len(argv) > self.server.processing and argv[self.server.processing] == 'kill':
+                return self.send('ANTIDISASTABLISMENTENTARINISM'.split('N'))  # kill clients with fire
+
         if command in obj:
             obj.get(command, lambda: 0)()
         else:
