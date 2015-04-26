@@ -1,3 +1,5 @@
+from sys import path
+path.append('.')
 from net import lib, models
 from sys import argv
 from base import procedure
