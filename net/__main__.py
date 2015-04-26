@@ -9,9 +9,10 @@ from SocketServer import TCPServer, BaseRequestHandler
 class Memory(object):
     score = None
     graph = None
-    weight = None
+    weight = 10
     complete = False
     start = None
+    points = []
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -42,6 +43,8 @@ class MyServer(TCPServer):
             key: value.__dict__
             for key, value in self.data.iteritems()
         }
+        for key, value in self.data.iteritems():
+            data[key]['points'] = value.points
         print json.dumps(data, indent=4)
         with open(STORE, 'w') as bitch:
             json.dump(data, bitch, indent=4)
@@ -85,6 +88,7 @@ class MyTCPHandler(BaseRequestHandler):
                     return self.handle_start()
 
                 weight = min(self.get_weight_span(), memory.weight)
+                print weight, self.get_weight_span(), memory.weight
                 if not memory.start:
                     memory.start = time()
             except Exception:
@@ -101,6 +105,10 @@ class MyTCPHandler(BaseRequestHandler):
             data.score = score
             data.graph = graph
             data.weight = weight
+            data.points.append([
+                weight, score, time() - data.start, self.client_address[0]
+            ])
+            print data.points
             print 'New best score of {} for {}'.format(score, name)
             if weight <= 1:
                 print 'Completed Search on {}'.format(name)
