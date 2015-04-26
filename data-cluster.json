@@ -1,0 +1,240 @@
+{
+    "scale": {
+        "complete": true, 
+        "weight": 1, 
+        "graph": {
+            "R-Dist": "", 
+            "Class": "R-Dist,L-Dist", 
+            "L-Dist": "", 
+            "L-Weight": "", 
+            "R-Weight": "R-Dist"
+        }, 
+        "points": [
+            [
+                1.0125, 
+                16665.1883181901, 
+                0.160844087600708, 
+                "192.168.1.50"
+            ], 
+            [
+                1, 
+                16515.413933143307, 
+                0.19286394119262695, 
+                "192.168.1.50"
+            ]
+        ], 
+        "duration": 0.19323110580444336, 
+        "score": 16515.413933143307
+    }, 
+    "shroom": {
+        "points": [
+            [
+                1, 
+                65093.12118619273, 
+                18.702744960784912, 
+                "192.168.1.51"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 18.7031090259552, 
+        "graph": {
+            "shroom-17": "shroom-11,shroom-18,shroom-8", 
+            "shroom-2": "", 
+            "shroom-0": "shroom-13,shroom-11,shroom-2", 
+            "shroom-7": "shroom-2,shroom-10,shroom-0,shroom-4,shroom-12", 
+            "shroom-6": "shroom-17,shroom-18", 
+            "shroom-11": "shroom-13,shroom-12,shroom-2", 
+            "shroom-10": "shroom-13,shroom-11,shroom-12,shroom-0", 
+            "shroom-4": "shroom-11,shroom-2,shroom-10,shroom-13", 
+            "shroom-19": "shroom-11,shroom-4,shroom-8,shroom-0", 
+            "shroom-18": "shroom-7,shroom-11,shroom-10,shroom-0,shroom-4", 
+            "shroom-8": "shroom-7,shroom-11,shroom-4,shroom-0,shroom-13", 
+            "shroom-13": "shroom-2", 
+            "shroom-12": "shroom-13,shroom-2"
+        }, 
+        "score": 65093.12118619273
+    }, 
+    "water": {
+        "points": [
+            [
+                1.0499999999999998, 
+                3339.189819916517, 
+                0.2618579864501953, 
+                "192.168.1.55"
+            ], 
+            [
+                1, 
+                3241.74013769325, 
+                0.2890329360961914, 
+                "192.168.1.55"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 0.28939294815063477, 
+        "graph": {
+            "water-3": "water-10", 
+            "water-15": "", 
+            "water-16": "water-10", 
+            "water-10": "", 
+            "water-12": "", 
+            "water-9": "", 
+            "water-22": ""
+        }, 
+        "score": 3241.74013769325
+    }, 
+    "autos": {
+        "points": [
+            [
+                1.083333333333333, 
+                2244.4886187107772, 
+                96.37141513824463, 
+                "192.168.1.59"
+            ], 
+            [
+                1, 
+                2123.1746024917234, 
+                131.3993730545044, 
+                "192.168.1.61"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 131.39975595474243, 
+        "graph": {
+            "autos-4": "autos-7", 
+            "autos-5": "autos-6", 
+            "autos-6": "", 
+            "autos-7": "autos-6", 
+            "autos-0": "", 
+            "autos-3": "autos-5,autos-4", 
+            "autos-8": "autos-6", 
+            "autos-9": "", 
+            "autos-24": "", 
+            "autos-16": "", 
+            "autos-23": "", 
+            "autos-20": "", 
+            "autos-12": "", 
+            "autos-13": "", 
+            "autos-10": "", 
+            "autos-11": ""
+        }, 
+        "score": 2123.1746024917234
+    }, 
+    "abalone": {
+        "points": [
+            [
+                1.0583333333333331, 
+                60046.174417392576, 
+                1.5257279872894287, 
+                "192.168.1.56"
+            ], 
+            [
+                1, 
+                57640.46528575025, 
+                1.5418901443481445, 
+                "192.168.1.55"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 1.5421841144561768, 
+        "graph": {
+            "abalone-8": "", 
+            "abalone-0": "", 
+            "abalone-1": "abalone-0,abalone-4", 
+            "abalone-2": "abalone-1,abalone-4", 
+            "abalone-3": "", 
+            "abalone-4": "abalone-0", 
+            "abalone-5": "abalone-4,abalone-6", 
+            "abalone-6": "abalone-7,abalone-4", 
+            "abalone-7": "abalone-0,abalone-4"
+        }, 
+        "score": 57640.46528575025
+    }, 
+    "bot2": {
+        "points": [
+            [
+                1.0999999999999996, 
+                22807.191868276845, 
+                0.2956249713897705, 
+                "192.168.1.61"
+            ], 
+            [
+                1, 
+                21602.22687211133, 
+                0.30971312522888184, 
+                "192.168.1.61"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 0.3100271224975586, 
+        "graph": {
+            "bot2-2": "", 
+            "bot2-0": "bot2-2", 
+            "bot2-1": "bot2-2"
+        }, 
+        "score": 21602.22687211133
+    }, 
+    "bot4": {
+        "points": [
+            [
+                1.0666666666666664, 
+                52596.99759755227, 
+                0.5528631210327148, 
+                "192.168.1.57"
+            ], 
+            [
+                1, 
+                50349.21024489782, 
+                0.5634310245513916, 
+                "192.168.1.57"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 0.563798189163208, 
+        "graph": {
+            "bot4-4": "", 
+            "bot4-0": "bot4-4,bot4-2", 
+            "bot4-1": "bot4-4", 
+            "bot4-2": "bot4-4", 
+            "bot4-3": "bot4-4,bot4-2"
+        }, 
+        "score": 50349.21024489782
+    }, 
+    "breast": {
+        "points": [
+            [
+                1.0749999999999997, 
+                773.5560446878844, 
+                1.2565460205078125, 
+                "192.168.1.58"
+            ], 
+            [
+                1, 
+                751.0705337696056, 
+                1.2979731559753418, 
+                "192.168.1.58"
+            ]
+        ], 
+        "complete": true, 
+        "weight": 1, 
+        "duration": 1.298279047012329, 
+        "graph": {
+            "breast-4": "", 
+            "breast-5": "", 
+            "breast-7": "", 
+            "breast-0": "breast-10", 
+            "breast-1": "", 
+            "breast-2": "", 
+            "breast-3": "", 
+            "breast-8": "", 
+            "breast-9": "", 
+            "breast-10": ""
+        }, 
+        "score": 751.0705337696056
+    }
+}
