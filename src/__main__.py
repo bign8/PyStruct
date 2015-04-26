@@ -43,16 +43,16 @@ def network():
             monitor.start()
             threads = []
             # TODO: REMOVE TEMPORARY SINGLE THREADED HACK
-            # thread_count, base = cpu_count(), 1
-            # span = (weight - 1) / float(thread_count)
-            # for _ in xrange(thread_count):
-            #     thread = Process(name, base, monitor)
-            #     base += span
-            #     thread.start()
-            #     threads.append(thread)
-            thread = Process(name, weight, monitor)
-            thread.start()
-            threads.append(thread)
+            thread_count, base = cpu_count(), 1
+            span = (weight - 1) / float(thread_count)
+            for _ in xrange(thread_count):
+                thread = Process(name, base, monitor)
+                base += span
+                thread.start()
+                threads.append(thread)
+            # thread = Process(name, weight, monitor)
+            # thread.start()
+            # threads.append(thread)
 
             # Use a round-robbin queue to ask the threads to join
             score = None

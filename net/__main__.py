@@ -68,7 +68,7 @@ class MyTCPHandler(BaseRequestHandler):
 
     def get_weight_span(self):
         # TODO: REMOVE STUPID WEIGHT GATHERING COMMAND
-        return choice([1, 1.02, 1.04, 1.06, 1.08, 1.1, 1.12, 1.14, 1.16, 1.16, 1.2])
+        return choice([1, 1.02])  # , 1.04, 1.06, 1.08, 1.1, 1.12, 1.14, 1.16, 1.16, 1.2
         # addr = self.client_address[0]
         # index = int(addr[addr.rfind('.') + 1:])
         # # Cluster config (lowest score = 50)
