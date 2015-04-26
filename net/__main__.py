@@ -67,15 +67,15 @@ class MyTCPHandler(BaseRequestHandler):
         # Cluster config (lowest score = 50)
         if index > 20:
             index -= 50
-            return weights[index], weights[index] + delta
-        return 1, 1.2
+            return weights[index] + delta
+        return 1.2
 
     def handle_start(self):
         name = None
 
         if len(argv) > self.server.processing:
             name = argv[self.server.processing]
-        bot, top = 1, 1.2
+        weight = 1.2
         if name:
             try:
                 memory = self.server.data.setdefault(name, Memory())
@@ -84,12 +84,12 @@ class MyTCPHandler(BaseRequestHandler):
                     self.server.processing += 1
                     return self.handle_start()
 
-                bot, top = self.get_weight_span()
+                weight = min(self.get_weight_span(), memory.weight)
                 if not memory.start:
                     memory.start = time()
             except Exception:
                 name = None
-        self.send((name, bot, top))
+        self.send((name, weight))
 
     def handle_end(self):
         name, weight, score, graph = self.get()

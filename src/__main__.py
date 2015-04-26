@@ -27,21 +27,21 @@ def network():
     delay = models.Delay(cap=5)
     while True:
         try:
-            name, top, bot = lib.start()
+            name, weight = lib.start()
             if not name:
                 print 'No job'
                 delay()
                 continue
             else:
                 delay.reset()
-            print 'Search "{}" with max weight of {:.6f}'.format(name, top)
+            print 'Search "{}" with max weight of {:.6f}'.format(name, weight)
 
             # Fire up process threads with shared access to monitor
             monitor = Monitor(name)
             monitor.start()
             threads = []
-            thread_count, base = cpu_count(), top
-            span = (bot - top) / float(thread_count)
+            thread_count, base = cpu_count(), 1
+            span = (weight - 1) / float(thread_count)
             for _ in xrange(thread_count):
                 thread = Process(name, base, monitor)
                 base += span
