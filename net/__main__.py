@@ -4,6 +4,7 @@ from sys import argv
 from time import time
 from os.path import isfile
 from SocketServer import TCPServer, BaseRequestHandler
+from random import choice
 
 
 class Memory(object):
@@ -12,9 +13,10 @@ class Memory(object):
     weight = 10
     complete = False
     start = None
-    points = []
+    points = None
 
     def __init__(self, **kwargs):
+        self.points = []
         self.__dict__.update(kwargs)
 
     def __repr__(self):
@@ -65,13 +67,15 @@ class MyTCPHandler(BaseRequestHandler):
         lib.send(self.request, msg)
 
     def get_weight_span(self):
-        addr = self.client_address[0]
-        index = int(addr[addr.rfind('.') + 1:])
-        # Cluster config (lowest score = 50)
-        if index > 20:
-            index -= 50
-            return weights[index] + delta
-        return 1.2
+        # TODO: REMOVE STUPID WEIGHT GATHERING COMMAND
+        return choice([1, 1.02, 1.04, 1.06, 1.08, 1.1, 1.12, 1.14, 1.16, 1.16, 1.2])
+        # addr = self.client_address[0]
+        # index = int(addr[addr.rfind('.') + 1:])
+        # # Cluster config (lowest score = 50)
+        # if index > 20:
+        #     index -= 50
+        #     return weights[index] + delta
+        # return 1.2
 
     def handle_start(self):
         name = None
@@ -88,7 +92,6 @@ class MyTCPHandler(BaseRequestHandler):
                     return self.handle_start()
 
                 weight = min(self.get_weight_span(), memory.weight)
-                print weight, self.get_weight_span(), memory.weight
                 if not memory.start:
                     memory.start = time()
             except Exception:
@@ -108,7 +111,6 @@ class MyTCPHandler(BaseRequestHandler):
             data.points.append([
                 weight, score, time() - data.start, self.client_address[0]
             ])
-            print data.points
             print 'New best score of {} for {}'.format(score, name)
             if weight <= 1:
                 print 'Completed Search on {}'.format(name)

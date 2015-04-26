@@ -1,0 +1,86 @@
+{
+    "+abalone": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'abalone-8': '', 'abalone-0': '', 'abalone-1': 'abalone-0,abalone-4', 'abalone-2': 'abalone-4,abalone-1', 'abalone-3': '', 'abalone-4': 'abalone-0', 'abalone-5': 'abalone-4,abalone-6', 'abalone-6': 'abalone-7,abalone-4', 'abalone-7': 'abalone-0,abalone-4'},
+        "score": 57640.46528575025,
+        "duration": 0.514
+    },
+    "+bot2": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'bot2-2': '', 'bot2-0': 'bot2-2', 'bot2-1': 'bot2-2'},
+        "score": 21602.22687211133,
+        "duration": 0.109
+    },
+    "+bot4": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'bot4-4': '', 'bot4-0': 'bot4-4,bot4-2', 'bot4-1': 'bot4-4', 'bot4-2': 'bot4-4', 'bot4-3': 'bot4-2,bot4-4'},
+        "score": 50349.21024489782,
+        "duration": 0.197
+    },
+    "+autos": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'autos-4': 'autos-7', 'autos-5': 'autos-6', 'autos-6': '', 'autos-20': '', 'autos-0': '', 'autos-3': 'autos-5,autos-4', 'autos-8': 'autos-6', 'autos-9': '', 'autos-16': '', 'autos-7': 'autos-6', 'autos-23': '', 'autos-24': '', 'autos-12': '', 'autos-13': '', 'autos-10': '', 'autos-11': ''},
+        "score": 2123.174602491724,
+        "duration": 53.723
+    },
+    "+breast": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'breast-4': '', 'breast-5': '', 'breast-7': '', 'breast-0': '', 'breast-1': '', 'breast-2': '', 'breast-3': '', 'breast-8': '', 'breast-9': 'breast-10', 'breast-10': ''},
+        "score": 751.0705337696056,
+        "duration": 0.422
+    },
+    "+scale": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'L-Weight': '', 'R-Dist': '', 'L-Dist': 'L-Weight', 'Class': 'L-Dist,R-Weight', 'R-Weight': ''},
+        "score": 16515.413933143307,
+        "duration": 0.492
+    },
+    "+shroom": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'shroom-17': 'shroom-11,shroom-8,shroom-18', 'shroom-2': '', 'shroom-0': 'shroom-13,shroom-2,shroom-11', 'shroom-7': 'shroom-4,shroom-0,shroom-2,shroom-12,shroom-10', 'shroom-6': 'shroom-17,shroom-18', 'shroom-10': 'shroom-13,shroom-11,shroom-0,shroom-12', 'shroom-4': 'shroom-11,shroom-2,shroom-13,shroom-10', 'shroom-11': 'shroom-13,shroom-2,shroom-12', 'shroom-8': 'shroom-7,shroom-11,shroom-4,shroom-13,shroom-0', 'shroom-19': 'shroom-8,shroom-11,shroom-4,shroom-0', 'shroom-18': 'shroom-7,shroom-11,shroom-4,shroom-0,shroom-10', 'shroom-13': 'shroom-2', 'shroom-12': 'shroom-13,shroom-2'},
+        "score": 65093.12118619273,
+        "duration": 10.342
+    },
+    "-hep": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'hep-19': 'hep-3', 'hep-6': 'hep-5', 'hep-11': 'hep-19,hep-9', 'hep-3': '', 'hep-10': 'hep-11', 'hep-9': 'hep-19', 'hep-8': 'hep-9', 'hep-5': 'hep-11', 'hep-4': 'hep-19', 'hep-7': 'hep-6', 'hep-2': 'hep-0', 'hep-1': '', 'hep-0': 'hep-19,hep-11', 'hep-13': 'hep-0,hep-11', 'hep-12': 'hep-0,hep-11'},
+        "score": 7569.68640725676,
+        "duration": 274.754
+    },
+    "+water": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'water-3': 'water-10', 'water-15': '', 'water-16': 'water-10', 'water-10': '', 'water-12': '', 'water-9': '', 'water-22': ''},
+        "score": 3241.74013769325,
+        "duration": 0.131
+    },
+    "-bands": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'bands-16': '', 'bands-32': 'bands-12', 'bands-15': '', 'bands-8': 'bands-5', 'bands-9': 'bands-4,bands-14', 'bands-11': 'bands-9', 'bands-38': 'bands-4', 'bands-5': 'bands-11,bands-19', 'bands-6': 'bands-39,bands-9', 'bands-7': 'bands-12', 'bands-0': '', 'bands-14': '', 'bands-3': '', 'bands-4': 'bands-13,bands-14', 'bands-39': 'bands-13,bands-14', 'bands-12': 'bands-39,bands-6', 'bands-19': 'bands-14', 'bands-13': 'bands-14'},
+        "score": 14070.23364260513,
+        "duration": 404.455
+    }
+    "-image": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'image-19': '', 'image-18': '', 'image-13': '', 'image-12': '', 'image-11': '', 'image-10': '', 'image-17': '', 'image-16': '', 'image-15': '', 'image-14': '', 'image-7': '', 'image-6': '', 'image-5': '', 'image-4': 'image-18', 'image-2': '', 'image-1': '', 'image-9': '', 'image-8': ''},
+        "score": 896.0710530495277,
+        "duration": 1174.317
+    }
+    "vote": {
+        "complete": true,
+        "weight": 1,
+        "graph": {'vote-12': 'vote-15,vote-1,vote-13', 'vote-15': 'vote-16,vote-11', 'vote-2': '', 'vote-13': 'vote-16,vote-15', 'vote-14': 'vote-12,vote-13', 'vote-11': 'vote-2', 'vote-9': 'vote-12,vote-7', 'vote-8': 'vote-5,vote-7', 'vote-10': 'vote-16,vote-2', 'vote-5': 'vote-14,vote-9', 'vote-4': 'vote-3,vote-5', 'vote-7': 'vote-16,vote-6', 'vote-6': 'vote-14,vote-13', 'vote-1': 'vote-16,vote-11', 'vote-0': 'vote-11,vote-4', 'vote-3': 'vote-12,vote-9', 'vote-16': 'vote-2'},
+        "score": 33091.8785211361,
+        "duration": 3188.902
+    }
+}
